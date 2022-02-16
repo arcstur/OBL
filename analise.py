@@ -1,5 +1,4 @@
 import csv
-import pandas as pd
 
 print("Para fazer a análise dos participantes, as seguintes colunas serão necessárias:")
 print("  Categoria (Regular e Aberta)")
@@ -38,9 +37,8 @@ with open(tabela_classificacao, 'r') as fc:
         if line[index_categoria]=="Aberta": count_aberta += 1
         elif line[index_categoria]=="Regular": count_regular += 1
 
-        var_sexo = line[index_sexo]
-        if var_sexo in {"Masculino", "M"}: count_masc += 1
-        elif var_sexo in {"Feminino", "F"}: count_fem += 1
+        if line[index_sexo] in {"Masculino", "M"}: count_masc += 1
+        elif line[index_sexo] in {"Feminino", "F"}: count_fem += 1
 
         set_UF.add(line[index_UF])
         set_cidade.add(line[index_cidade])
@@ -57,7 +55,7 @@ with open(tabela_classificacao, 'r') as fc:
     print("    Aberta:", str(count_aberta))
     print()
     print("    Masculino:", str(count_masc))
-    print('    Feminino:', str(count_fem))
+    print('    Feminino:', str(count_fem), "(" + str(int(100*round(count_fem/count_total,2))) + "%)")
     print('    Outro:', str(count_total - count_masc - count_fem))
     print()
 
