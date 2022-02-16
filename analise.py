@@ -4,18 +4,16 @@ print("Para fazer a análise dos participantes, as seguintes colunas serão nece
 print("  Categoria (Regular e Aberta)")
 print("  Sexo (Masculino, Feminino, -)")
 print("  Nome da Escola")
-print("  Administração da escola (pública - pode ser municipal, estadual também - ou privada)")
+print("  Administração da escola (pública - pode ser municipal, estadual, ... - ou privada)")
 print("  UF")
 print("  Cidade")
+print("Por padrão, vamos utilizar duas tabelas. A de 'classificação' contém as notas, e quase todas colunas acima, mas NÃO contém a coluna Administração por padrão. Logo, vamos precisar da tabela de 'inscritos', que contém a coluna de Administração.")
+print()
 
-resposta = input("Caso seu .csv tenha todas as colunas acima, digite 's'. Caso tenha um arquivo separado com a Administração da escola (padrão), aperte Enter:\n")
+tabela_classificacao = input("Digite o nome da planilha de classificação, COM a extensão '.csv': ")
+tabela_inscritos = input("Digite o nome da planilha de inscritos, COM a extensão '.csv': ")
+print()
 
-
-if resposta=="s":
-    arquivo = input("Digite o nome do csv que contém todas as colunas necessárias:\n")
-    if not arquivo.endswith('.csv'):
-        arquivo += ".csv"
-    print("Vamos abrir o arquivo " + arquivo)
 
     
 
