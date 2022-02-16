@@ -1,0 +1,19 @@
+# Principais
+
+- [ ] incluir a funcionalidade de pública/privada
+- [ ] incluir a categoria Mirim
+- [ ] separar as estatísticas (geo, gênero) para apenas a Regular
+
+# Geostats
+
+- [ ] incluir a quantidade de participantes por estado
+- [ ] incluir diferença capital/não-capital (merece uma análise mais cuidadosa)
+
+# Pequenas
+
+- [ ] incluir porcentagens
+
+# Pedir pra Fractal 
+
+- [ ] incluir data de nascimento
+- [ ] incluir administração na planilha de classificação
