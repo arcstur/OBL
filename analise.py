@@ -39,7 +39,6 @@ with open(tabela_inscritos, 'r') as f:
     reader = csv.reader(f)
 
     headers = next(reader)
-    print(headers)
 
     index_escola = headers.index('Escola')
     index_adm = headers.index('Administração')

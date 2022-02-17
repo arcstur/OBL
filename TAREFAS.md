@@ -1,12 +1,16 @@
 # Tarefas
 
-## Gerais
+## Funcionalidades
 
 - [x] incluir porcentagens (2022-02-16)
 - [x] incluir a funcionalidade de pública/privada (2022-02-17)
 - [ ] gerar texto com os resultados
 - [ ] incluir a categoria Mirim
 - [ ] separar as estatísticas (geo, gênero) para apenas a Regular
+
+## Otimização
+
+- [ ] implementar: se a coluna não for encontrada, pedir para identificar qual é
 
 ## Geostats
 
