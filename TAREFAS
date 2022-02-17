@@ -1,6 +1,6 @@
 # Principais
 
-- [ ] incluir a funcionalidade de pública/privada
+- [x] incluir a funcionalidade de pública/privada (2022-02-17)
 - [ ] incluir a categoria Mirim
 - [ ] separar as estatísticas (geo, gênero) para apenas a Regular
 
@@ -11,7 +11,7 @@
 
 # Pequenas
 
-- [ ] incluir porcentagens
+- [x] incluir porcentagens (2022-02-16)
 
 # Pedir pra Fractal 
 
@@ -21,3 +21,4 @@
 # Projetos Grandes
 
 - [ ] gerar gráficos em imagem
+- [ ] talvez trocar pro módulo pandas
