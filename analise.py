@@ -44,8 +44,24 @@ with open(tabela_inscritos, 'r') as f:
 
     for line in reader:
         dic_escolas[line[index_escola]] = line[index_adm]
-        if line[index_adm]=="": print(line[index_escola])
-        # Não tá dando certo! Tem escolas sem valor na Administração >:(
+        
+# for nome,adm in dic_escolas.items():
+#     if adm=="" and nome!="":
+#         print("A seguinte escola não possui valor em Administração (pública ou privada). Digite o novo valor.")
+#         nova_adm = input(nome + ": ")
+#         while not (nova_adm in {'pública', 'privada'}):
+#             print('Deve ser "pública" ou "privada"')
+#             nova_adm = input(nome + ": ")
+
+#         dic_escolas[nome] = nova_adm
+#     print()
+    # ok = input("Gostaria de salvar estes novos valores na planilha? [S/n] ")
+    # if ok != "n":
+    #     for line in reader:
+    #         if line[index_adm]=="":
+    #             print()
+
+    # Não tá dando certo! Tem escolas sem valor na Administração >:(
 
 def é_publica(nome):
     return (dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública'})
