@@ -148,5 +148,5 @@ print('    escolas privadas:', str(count_escola_privada))
 
 print('Participantes por estado:')
 for dupla in counter_UF.most_common(len(counter_UF)):
-    if dupla[0]!='': print(dupla[0] + ':', dupla[1])
+    print(dupla[0] + ':', dupla[1])
 
