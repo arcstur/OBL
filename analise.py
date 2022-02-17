@@ -1,4 +1,5 @@
 import csv
+from collections import Counter
 
 def str_porcentagem(a,b):
     return('(' + str(int(100*round(a/b,2))) + '%)')
@@ -16,9 +17,9 @@ print('Por padrão, vamos utilizar duas tabelas. A de "classificação" contém 
 print()
 
 # tabela_classificacao = input('Digite o nome da planilha de classificação, COM a extensão '.csv': ')
-tabela_classificacao = 'mascate-mirim_2021_fase-1_classificacao.csv'
+tabela_classificacao = 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv'
 # tabela_inscritos = input('Digite o nome da planilha de inscritos, COM a extensão '.csv': ')
-tabela_inscritos = 'mascate-mirim_inscritos.csv'
+tabela_inscritos = 'mascate-regular-e-aberta_inscritos_atualizado.csv'
 
 count_total= 0
 count_regular, count_aberta = 0,0
@@ -26,7 +27,7 @@ count_reg_publica, count_reg_privada = 0,0
 count_masc, count_fem = 0,0
 set_escola = set()
 count_escola_publica, count_escola_privada = 0,0
-set_UF = set()
+lista_UF = []
 set_cidade = set()
 
 #Faz um dicionário escola/administração com a planilha de inscritos
@@ -38,6 +39,7 @@ with open(tabela_inscritos, 'r') as f:
     reader = csv.reader(f)
 
     headers = next(reader)
+    print(headers)
 
     index_escola = headers.index('Escola')
     index_adm = headers.index('Administração')
@@ -101,10 +103,14 @@ with open(tabela_classificacao, 'r') as f:
         if line[index_sexo] in {'Masculino', 'M'}: count_masc += 1
         elif line[index_sexo] in {'Feminino', 'F'}: count_fem += 1
 
-        set_UF.add(line[index_UF])
-        set_cidade.add(line[index_cidade])
-        set_escola.add(line[index_escola])
+        if line[index_categoria]=='Regular':
+            lista_UF.append(line[index_UF])
+            set_cidade.add(line[index_cidade])
+            set_escola.add(line[index_escola])
     
+set_UF = set(lista_UF)
+counter_UF = Counter(lista_UF)
+
 #Remover valores inválidos
 for x in ['', 'Não identificado']:
     if x in set_UF: set_UF.remove(x)
@@ -127,6 +133,8 @@ print('    Feminino:', str(count_fem), str_porcentagem(count_fem,count_total))
 print('    Outro:', str(count_total - count_masc - count_fem))
 print()
 
+print('# Categoria Regular')
+
 # print(set_UF)
 print('Total de', str(len(set_UF)), 'estados')
 
@@ -137,3 +145,8 @@ print('Total de', str(len(set_cidade)), 'cidades')
 print('Total de', str(len(set_escola)), 'escolas')
 print('    escolas públicas:', str(count_escola_publica), str_porcentagem(count_escola_publica, len(set_escola)))
 print('    escolas privadas:', str(count_escola_privada))
+
+print('Participantes por estado:')
+for dupla in counter_UF.most_common(len(counter_UF)):
+    if dupla[0]!='': print(dupla[0] + ':', dupla[1])
+
