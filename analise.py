@@ -4,8 +4,6 @@ from collections import Counter
 def str_porcentagem(a,b):
     return('(' + str(int(100*round(a/b,2))) + '%)')
 
-
-
 print('Para fazer a análise dos participantes, as seguintes colunas serão necessárias:')
 print('  Categoria (Regular e Aberta)')
 print('  Sexo (Masculino, Feminino)')
@@ -51,10 +49,10 @@ for nome,adm in dic_escolas.items():
     if adm=='' and nome!='':
         ok = False
         print('A seguinte escola não possui valor em Administração (pública ou privada). Digite o novo valor.')
-        nova_adm = input(nome + ': ')
+        nova_adm = input(nome + ':')
         while not (nova_adm in {'pública', 'privada'}):
             print('Deve ser "pública" ou "privada"')
-            nova_adm = input(nome + ': ')
+            nova_adm = input(nome + ':')
 
         dic_escolas[nome] = nova_adm
 print()
@@ -99,10 +97,9 @@ with open(tabela_classificacao, 'r') as f:
             if é_publica(line[index_escola]): count_reg_publica += 1
             elif é_privada(line[index_escola]): count_reg_privada += 1
 
-        if line[index_sexo] in {'Masculino', 'M'}: count_masc += 1
-        elif line[index_sexo] in {'Feminino', 'F'}: count_fem += 1
+            if line[index_sexo] in {'Masculino', 'M'}: count_masc += 1
+            elif line[index_sexo] in {'Feminino', 'F'}: count_fem += 1
 
-        if line[index_categoria]=='Regular':
             lista_UF.append(line[index_UF])
             set_cidade.add(line[index_cidade])
             set_escola.add(line[index_escola])
@@ -122,30 +119,30 @@ for nome in set_escola:
     elif é_publica(nome): count_escola_publica += 1
 
 print('Total de',str(count_regular + count_aberta),'participantes')
-print('    Aberta:', str(count_aberta))
-print('    Regular:', str(count_regular))
-print('        de escola pública:', str(count_reg_publica), str_porcentagem(count_reg_publica, count_regular))
-print('        de escola privada:', str(count_reg_privada))
+print()
+print('# Categoria Aberta')
+print('    Total:', str(count_aberta))
+print()
+print('# Categoria Regular')
+print('    Total:', str(count_regular))
+print('      de escola pública:', str(count_reg_publica), str_porcentagem(count_reg_publica, count_regular))
+print('      de escola privada:', str(count_reg_privada))
 print()
 print('    Masculino:', str(count_masc))
-print('    Feminino:', str(count_fem), str_porcentagem(count_fem,count_total))
-print('    Outro:', str(count_total - count_masc - count_fem))
+print('    Feminino:', str(count_fem), str_porcentagem(count_fem,count_regular))
+# print('    Outro:', str(count_regular - count_masc - count_fem))
 print()
 
-print('# Categoria Regular')
-
-# print(set_UF)
-print('Total de', str(len(set_UF)), 'estados')
+# print(set_escola)
+print('    Total de', str(len(set_escola)), 'escolas')
+print('      escolas públicas:', str(count_escola_publica), str_porcentagem(count_escola_publica, len(set_escola)))
+print('      escolas privadas:', str(count_escola_privada))
 
 # print(set_cidade)
-print('Total de', str(len(set_cidade)), 'cidades')
+print('    Total de', str(len(set_cidade)), 'cidades')
 
-# print(set_escola)
-print('Total de', str(len(set_escola)), 'escolas')
-print('    escolas públicas:', str(count_escola_publica), str_porcentagem(count_escola_publica, len(set_escola)))
-print('    escolas privadas:', str(count_escola_privada))
-
-print('Participantes por estado:')
+# print(set_UF)
+print('    Total de', str(len(set_UF)), 'estados')
 for dupla in counter_UF.most_common(len(counter_UF)):
-    print(dupla[0] + ':', dupla[1])
-
+  print('      ' + dupla[0] + ':', dupla[1])
+print()
