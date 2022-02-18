@@ -4,21 +4,8 @@ from collections import Counter
 def str_porcentagem(a,b):
     return('(' + str(int(100*round(a/b,2))) + '%)')
 
-print('Para fazer a análise dos participantes, as seguintes colunas serão necessárias:')
-print('  Categoria (Regular e Aberta)')
-print('  Sexo (Masculino, Feminino)')
-print('  Nome da Escola')
-print('  Administração da escola (pública ou privada)')
-print('  UF')
-print('  Cidade')
-print('Por padrão, vamos utilizar duas tabelas. A de "classificação" contém as notas, e quase todas colunas acima, mas NÃO contém a coluna Administração por padrão. Logo, vamos precisar da tabela de "inscritos", que contém a coluna de Administração.')
-print()
-
-# tabela_classificacao = input('Digite o nome da planilha de classificação, COM a extensão '.csv': ')
-tabela_classificacao = 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv'
-# tabela_inscritos = input('Digite o nome da planilha de inscritos, COM a extensão '.csv': ')
-tabela_inscritos = 'mascate-regular-e-aberta_inscritos_atualizado.csv'
-
+tabela_classificacao=''
+tabela_inscritos=''
 count_total= 0
 count_regular, count_aberta = 0,0
 count_reg_publica, count_reg_privada = 0,0
@@ -27,11 +14,25 @@ set_escola = set()
 count_escola_publica, count_escola_privada = 0,0
 lista_UF = []
 set_cidade = set()
+dic_escolas={'':''} #Faz um dicionário escola/administração com a planilha de inscritos
 
-#Faz um dicionário escola/administração com a planilha de inscritos
-dic_escolas={'':''}
+def intro():
+    print('Para fazer a análise dos participantes, as seguintes colunas serão necessárias:')
+    print('  Categoria (Regular e Aberta)')
+    print('  Sexo (Masculino, Feminino)')
+    print('  Nome da Escola')
+    print('  Administração da escola (pública ou privada)')
+    print('  UF')
+    print('  Cidade')
+    print('Por padrão, vamos utilizar duas tabelas. A de "classificação" contém as notas, e quase todas colunas acima, mas NÃO contém a coluna Administração por padrão. Logo, vamos precisar da tabela de "inscritos", que contém a coluna de Administração.')
+    print()
 
+intro()
 
+# tabela_classificacao = input('Digite o nome da planilha de classificação, COM a extensão ".csv": ')
+tabela_classificacao = 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv'
+# tabela_inscritos = input('Digite o nome da planilha de inscritos, COM a extensão ".csv": ')
+tabela_inscritos = 'mascate-regular-e-aberta_inscritos_atualizado.csv'
 
 with open(tabela_inscritos, 'r') as f:
     reader = csv.reader(f)
@@ -55,8 +56,9 @@ for nome,adm in dic_escolas.items():
             nova_adm = input(nome + ':')
 
         dic_escolas[nome] = nova_adm
-print()
+
 if not ok:
+    print()
     resposta = input('Gostaria de salvar estes novos valores na planilha? [S/n] ')
     if resposta != 'n':
         with open(tabela_inscritos.replace('.csv','') + '_atualizado.csv', 'w') as fw, open(tabela_inscritos, 'r') as fr:
@@ -144,5 +146,5 @@ print('    Total de', str(len(set_cidade)), 'cidades')
 # print(set_UF)
 print('    Total de', str(len(set_UF)), 'estados')
 for dupla in counter_UF.most_common(len(counter_UF)):
-  print('      ' + dupla[0] + ':', dupla[1])
+    print('      ' + dupla[0] + ':', dupla[1])
 print()
