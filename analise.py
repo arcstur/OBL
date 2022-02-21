@@ -14,7 +14,7 @@ set_escola = set()
 count_escola_publica, count_escola_privada = 0,0
 lista_UF = []
 set_cidade = set()
-dic_escolas={'':''} #Faz um dicionário escola/administração com a planilha de inscritos
+dic_escolas= dict() #Faz um dicionário escola/administração com a planilha de inscritos
 
 def intro():
     print('Para fazer a análise dos participantes, as seguintes colunas serão necessárias:')
@@ -50,10 +50,10 @@ for nome,adm in dic_escolas.items():
     if adm=='' and nome!='':
         ok = False
         print('A seguinte escola não possui valor em Administração (pública ou privada). Digite o novo valor.')
-        nova_adm = input(nome + ':')
+        nova_adm = input(nome + ': ')
         while not (nova_adm in {'pública', 'privada'}):
             print('Deve ser "pública" ou "privada"')
-            nova_adm = input(nome + ':')
+            nova_adm = input(nome + ': ')
 
         dic_escolas[nome] = nova_adm
 
@@ -127,11 +127,12 @@ print('    Total:', str(count_aberta))
 print()
 print('# Categoria Regular')
 print('    Total:', str(count_regular))
-print('      de escola pública:', str(count_reg_publica), str_porcentagem(count_reg_publica, count_regular))
-print('      de escola privada:', str(count_reg_privada))
 print()
-print('    Masculino:', str(count_masc))
+print('    De escola pública:', str(count_reg_publica), str_porcentagem(count_reg_publica, count_regular))
+print('    De escola privada:', str(count_reg_privada))
+print()
 print('    Feminino:', str(count_fem), str_porcentagem(count_fem,count_regular))
+print('    Masculino:', str(count_masc))
 # print('    Outro:', str(count_regular - count_masc - count_fem))
 print()
 
