@@ -30,7 +30,7 @@ class Prova():
         self.set_escola = set()
         self.count_escola_publica = 0
         self.count_escola_privada = 0
-        self.lista_UF = []
+        self.lista_UF = list()
         self.set_cidade = set()
         self.dic_escolas = dict() #Faz um dicionário escola/administração com a planilha de inscritos
 
@@ -87,7 +87,7 @@ class Prova():
                 print(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv')
                 print()
 
-    def é_publica(self, nome):
+    def é_pública(self, nome):
         return (self.dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública'})
 
     def é_privada(self, nome):
@@ -95,6 +95,9 @@ class Prova():
 
 
     def analise(self):
+        if len(self.dic_escolas) <= 1:
+            self.criar_dicionario_escolas()
+
         with open(self.tabela_classificacao, 'r') as f:
             reader = csv.reader(f)
 
@@ -110,7 +113,7 @@ class Prova():
                 if line[index_categoria]=='Aberta': self.count_aberta += 1
                 elif line[index_categoria]=='Regular':
                     self.count_regular += 1
-                    if self.é_publica(line[index_escola]): self.count_reg_publica += 1
+                    if self.é_pública(line[index_escola]): self.count_reg_publica += 1
                     elif self.é_privada(line[index_escola]): self.count_reg_privada += 1
 
                     if line[index_sexo] in {'Feminino', 'F'}: self.count_fem += 1
@@ -123,16 +126,15 @@ class Prova():
         self.set_UF = set(self.lista_UF)
         self.counter_UF = Counter(self.lista_UF)
 
-        #Remover valores inválidos
-        for x in ['', 'Não identificado']:
-            if x in self.set_UF: self.set_UF.remove(x)
-            if x in self.set_cidade: self.set_cidade.remove(x)
-            if x in self.set_escola: self.set_escola.remove(x)
+        #Remover valores inválidos: não é necessário já que a cat. Regular sempre possui esses valores
+        # for x in ['', 'Não identificado']:
+        #     for sett in [self.set_UF, self.set_cidade, self.set_escola]:
+        #         if x in sett: sett.remove(x)
 
         #Cálculo escolas públicas/privadas
         for nome in self.set_escola:
             if self.é_privada(nome): self.count_escola_privada += 1
-            elif self.é_publica(nome): self.count_escola_publica += 1
+            elif self.é_pública(nome): self.count_escola_publica += 1
 
     def print_resultados(self):
         print(self.nome)
@@ -162,7 +164,7 @@ class Prova():
 
         # print(set_UF)
         print('    Total de', str(len(self.set_UF)), 'estados')
-        for dupla in self.counter_UF.most_common(len(self.counter_UF)):
+        for dupla in self.counter_UF.most_common():
             print('      ' + dupla[0] + ':', dupla[1])
         print()
 
@@ -172,12 +174,10 @@ intro()
 
 regab = Prova('PROVA REGULAR E ABERTA')
 regab.definir_tabelas('a.csv', 'b.csv')
-regab.criar_dicionario_escolas()
 regab.analise()
 regab.print_resultados()
 
 mirim = Prova('PROVA MIRIM')
 mirim.definir_tabelas('mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
-mirim.criar_dicionario_escolas()
 mirim.analise()
 mirim.print_resultados()
