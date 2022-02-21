@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 import glob
 
 # Lista todos os nomes de arquivos .xlsx
