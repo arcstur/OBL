@@ -50,8 +50,8 @@ Por enquanto é necessário ter Python instalado, e lembre-se de instalar as dep
         Masculino: 1168
 
         Total de 822 escolas
-        escolas públicas: 363 (44%)
-        escolas privadas: 459
+            escolas públicas: 363 (44%)
+            escolas privadas: 459
         Total de 325 cidades
         Total de 27 estados
         SP: 975
@@ -99,8 +99,8 @@ Por enquanto é necessário ter Python instalado, e lembre-se de instalar as dep
         Masculino: 291
 
         Total de 244 escolas
-        escolas públicas: 91 (37%)
-        escolas privadas: 153
+            escolas públicas: 91 (37%)
+            escolas privadas: 153
         Total de 127 cidades
         Total de 27 estados
         SP: 254
