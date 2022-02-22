@@ -7,7 +7,7 @@ Scripts da OBL
 - Converta em .csv (pode utilizar o script `converter.py`)
 - Rode `analise.py`
 
-Por enquanto é necessário ter Python instalado, e lembre-se de instalar as dependências necessárias com `pip install`.
+Por enquanto é necessário ter Python instalado, e lembre-se de instalar as dependências necessárias com o `pip`.
 
 ### Exemplo: OBL Edição Mascate
 
