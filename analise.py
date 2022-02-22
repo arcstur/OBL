@@ -136,6 +136,7 @@ class Prova():
             elif self.é_pública(nome): self.count_escola_publica += 1
 
     def print_resultados(self):
+        print()
         print(self.nome)
         print('Total de',str(self.count_regular + self.count_aberta),'participantes')
         print()
@@ -172,13 +173,27 @@ class Prova():
 def main():
     intro()
 
-    regab = Prova('PROVA REGULAR E ABERTA', 'a.csv', 'b.csv')
-    regab.analise()
-    regab.print_resultados()
+    lista_provas = list()
+    n = int(input('Diga o número de provas/edições que queres analisar: '))
 
-    mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
-    mirim.analise()
-    mirim.print_resultados()
+    for i in range(n):
+        print()
+        print('PROVA ', str(i+1))
+        nome = input('Digite o nome da prova: ')
+        lista_provas.append(Prova(nome, '', ''))
+
+    for prova in lista_provas:
+        prova.analise()
+        prova.print_resultados()
+
+
+    # regab = Prova('PROVA REGULAR E ABERTA', 'a.csv', 'b.csv')
+    # regab.analise()
+    # regab.print_resultados()
+
+    # mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
+    # mirim.analise()
+    # mirim.print_resultados()
 
 if __name__ == '__main__':
     main()
