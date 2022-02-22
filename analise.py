@@ -16,7 +16,7 @@ def intro():
     print()
 
 class Prova():
-    def __init__(self, nome):
+    def __init__(self, nome, tabela_classificacao='', tabela_inscritos=''):
         self.nome = nome
         self.tabela_classificacao = ''
         self.tabela_inscritos = ''
@@ -34,7 +34,6 @@ class Prova():
         self.set_cidade = set()
         self.dic_escolas = dict() #Faz um dicionário escola/administração com a planilha de inscritos
 
-    def definir_tabelas(self, tabela_classificacao='', tabela_inscritos=''):
         if tabela_classificacao == '':
             self.tabela_classificacao = input('Digite o nome da planilha de classificação, COM a extensão ".csv": ')
         else:
@@ -173,13 +172,11 @@ class Prova():
 def main():
     intro()
 
-    regab = Prova('PROVA REGULAR E ABERTA')
-    regab.definir_tabelas('a.csv', 'b.csv')
+    regab = Prova('PROVA REGULAR E ABERTA', 'a.csv', 'b.csv')
     regab.analise()
     regab.print_resultados()
 
-    mirim = Prova('PROVA MIRIM')
-    mirim.definir_tabelas('mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
+    mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
     mirim.analise()
     mirim.print_resultados()
 
