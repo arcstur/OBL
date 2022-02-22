@@ -170,14 +170,18 @@ class Prova():
 
 
 
-intro()
+def main():
+    intro()
 
-regab = Prova('PROVA REGULAR E ABERTA')
-regab.definir_tabelas('a.csv', 'b.csv')
-regab.analise()
-regab.print_resultados()
+    regab = Prova('PROVA REGULAR E ABERTA')
+    regab.definir_tabelas('a.csv', 'b.csv')
+    regab.analise()
+    regab.print_resultados()
 
-mirim = Prova('PROVA MIRIM')
-mirim.definir_tabelas('mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
-mirim.analise()
-mirim.print_resultados()
+    mirim = Prova('PROVA MIRIM')
+    mirim.definir_tabelas('mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
+    mirim.analise()
+    mirim.print_resultados()
+
+if __name__ == '__main__':
+    main()
