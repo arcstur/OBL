@@ -4,22 +4,18 @@
 
 - [x] incluir porcentagens (2022-02-16)
 - [x] incluir a funcionalidade de pública/privada (2022-02-17)
-- [ ] gerar texto com os resultados
-- [ ] incluir a categoria Mirim
 - [x] separar as estatísticas (geo, gênero) para apenas a Regular (2022-02-17)
-
-## Otimização
-
-- [ ] implementar: se a coluna não for encontrada, pedir para identificar qual é
-
-## Geostats
-
 - [x] incluir a quantidade de participantes por estado (2022-02-17)
-- [ ] incluir diferença capital/não-capital (merece uma análise mais cuidadosa)
+- [x] incluir a categoria Mirim (2022-02-22)
+- [x] implementar: classe/objeto (2022-02-22)
+- [x] implementar: perguntar número de provas a analisar (2022-02-22) 
+- [ ] otimização: se a coluna não for encontrada, pedir para identificar qual é
+- [ ] gerar texto com os resultados
+- [ ] gerar gráficos em imagem
 
 ## Ideias futuras
 
-- [ ] gerar gráficos em imagem
+- [ ] incluir diferença capital/não-capital (merece uma análise mais cuidadosa)
 - [ ] talvez trocar pro módulo pandas
 
 ## Pedir pra Fractal 
