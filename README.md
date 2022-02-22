@@ -18,7 +18,9 @@ Por enquanto é necessário ter Python instalado, e lembre-se de instalar as dep
     Administração da escola (pública ou privada)
     UF
     Cidade
-    Por padrão, vamos utilizar duas tabelas. A de "classificação" contém as notas, e quase todas colunas acima, mas NÃO contém a coluna Administração por padrão. Logo, vamos precisar da tabela de "inscritos", que contém a coluna de Administração.
+    Por padrão, vamos utilizar duas tabelas. A de "classificação" contém as notas,
+    e quase todas colunas acima, mas NÃO contém a coluna Administração por padrão.
+    Logo, vamos precisar da tabela de "inscritos", que contém a coluna de Administração.
 
     Diga o número de provas/edições que queres analisar: 2
 
