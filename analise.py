@@ -1,4 +1,5 @@
 import csv
+import pandas as pd
 from collections import Counter
 
 def str_porcentagem(a,b):
@@ -45,46 +46,52 @@ class Prova():
             self.tabela_inscritos = tabela_inscritos
 
     def criar_dicionario_escolas(self):
-        with open(self.tabela_inscritos, 'r') as f:
-            reader = csv.reader(f)
+        df = pd.read_csv(self.tabela_inscritos)
 
-            headers = next(reader)
+        print(df.columns)
 
-            index_escola = headers.index('Escola')
-            index_adm = headers.index('Administração')
+        print(df[['Escola', 'Administração']])
 
-            for line in reader:
-                self.dic_escolas[line[index_escola]] = line[index_adm]
+        # with open(self.tabela_inscritos, 'r') as f:
+        #     reader = csv.reader(f)
+
+        #     headers = next(reader)
+
+        #     index_escola = headers.index('Escola')
+        #     index_adm = headers.index('Administração')
+
+        #     for line in reader:
+        #         self.dic_escolas[line[index_escola]] = line[index_adm]
                 
-        ok = True
-        for nome,adm in self.dic_escolas.items():
-            if adm=='' and nome!='':
-                ok = False
-                print('A seguinte escola não possui valor em Administração (pública ou privada). Digite o novo valor.')
-                nova_adm = input(nome + ': ')
-                while not (nova_adm in {'pública', 'privada'}):
-                    print('Deve ser "pública" ou "privada"')
-                    nova_adm = input(nome + ': ')
+        # ok = True
+        # for nome,adm in self.dic_escolas.items():
+        #     if adm=='' and nome!='':
+        #         ok = False
+        #         print('A seguinte escola não possui valor em Administração (pública ou privada). Digite o novo valor.')
+        #         nova_adm = input(nome + ': ')
+        #         while not (nova_adm in {'pública', 'privada'}):
+        #             print('Deve ser "pública" ou "privada"')
+        #             nova_adm = input(nome + ': ')
 
-                self.dic_escolas[nome] = nova_adm
+        #         self.dic_escolas[nome] = nova_adm
 
-        if not ok:
-            print()
-            resposta = input('Gostaria de salvar estes novos valores na planilha? [S/n] ')
-            if resposta != 'n':
-                with open(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv', 'w') as fw, open(self.tabela_inscritos, 'r') as fr:
-                    reader = csv.reader(fr)
-                    writer = csv.writer(fw)
+        # if not ok:
+        #     print()
+        #     resposta = input('Gostaria de salvar estes novos valores na planilha? [S/n] ')
+        #     if resposta != 'n':
+        #         with open(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv', 'w') as fw, open(self.tabela_inscritos, 'r') as fr:
+        #             reader = csv.reader(fr)
+        #             writer = csv.writer(fw)
 
-                    for line in reader:
-                        if line[index_adm]=='':
-                            line[index_adm] = self.dic_escolas[line[index_escola]]
-                        writer.writerow(line)
+        #             for line in reader:
+        #                 if line[index_adm]=='':
+        #                     line[index_adm] = self.dic_escolas[line[index_escola]]
+        #                 writer.writerow(line)
 
-                print()
-                print('Os valores atualizados foram salvos na planilha')
-                print(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv')
-                print()
+        #         print()
+        #         print('Os valores atualizados foram salvos na planilha')
+        #         print(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv')
+        #         print()
 
     def é_pública(self, nome):
         return (self.dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública'})
@@ -188,12 +195,13 @@ def main():
 
 
     regab = Prova('PROVA REGULAR E ABERTA', 'a.csv', 'b.csv')
-    regab.analise()
-    regab.print_resultados()
+    regab.criar_dicionario_escolas()
+    # regab.analise()
+    # regab.print_resultados()
 
-    mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
-    mirim.analise()
-    mirim.print_resultados()
+    # mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
+    # mirim.analise()
+    # mirim.print_resultados()
 
 if __name__ == '__main__':
     main()
