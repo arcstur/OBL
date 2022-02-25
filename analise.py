@@ -125,7 +125,7 @@ class Prova():
         self.set_UF = set(self.lista_UF)
         self.counter_UF = Counter(self.lista_UF)
 
-        #Remover valores inválidos: não é necessário já que a cat. Regular sempre possui esses valores
+        #Remover valores inválidos: não é necessário já que a cat. Regular nunca possui esses valores
         # for x in ['', 'Não identificado']:
         #     for sett in [self.set_UF, self.set_cidade, self.set_escola]:
         #         if x in sett: sett.remove(x)
@@ -173,27 +173,27 @@ class Prova():
 def main():
     intro()
 
-    lista_provas = list()
-    n = int(input('Diga o número de provas/edições que queres analisar: '))
+    # lista_provas = list()
+    # n = int(input('Diga o número de provas/edições que queres analisar: '))
 
-    for i in range(n):
-        print()
-        print('PROVA ', str(i+1))
-        nome = input('Digite o nome da prova: ')
-        lista_provas.append(Prova(nome, '', ''))
+    # for i in range(n):
+    #     print()
+    #     print('PROVA ', str(i+1))
+    #     nome = input('Digite o nome da prova: ')
+    #     lista_provas.append(Prova(nome, '', ''))
 
-    for prova in lista_provas:
-        prova.analise()
-        prova.print_resultados()
+    # for prova in lista_provas:
+    #     prova.analise()
+    #     prova.print_resultados()
 
 
-    # regab = Prova('PROVA REGULAR E ABERTA', 'a.csv', 'b.csv')
-    # regab.analise()
-    # regab.print_resultados()
+    regab = Prova('PROVA REGULAR E ABERTA', 'a.csv', 'b.csv')
+    regab.analise()
+    regab.print_resultados()
 
-    # mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
-    # mirim.analise()
-    # mirim.print_resultados()
+    mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
+    mirim.analise()
+    mirim.print_resultados()
 
 if __name__ == '__main__':
     main()
