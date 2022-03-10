@@ -18,20 +18,20 @@ def intro():
 class Prova():
     def __init__(self, nome, tabela_classificacao='', tabela_inscritos=''):
         self.nome = nome
-        self.tabela_classificacao = ''
-        self.tabela_inscritos = ''
-        self.count_total = 0
-        self.count_regular = 0
-        self.count_aberta = 0
-        self.count_reg_publica = 0
-        self.count_reg_privada = 0
-        self.count_masc = 0
-        self.count_fem = 0
-        self.set_escola = set()
-        self.count_escola_publica = 0
-        self.count_escola_privada = 0
-        self.lista_UF = list()
-        self.set_cidade = set()
+        # self.tabela_classificacao = ''
+        # self.tabela_inscritos = ''
+        # self.count_total = 0
+        # self.count_regular = 0
+        # self.count_aberta = 0
+        # self.count_reg_publica = 0
+        # self.count_reg_privada = 0
+        # self.count_masc = 0
+        # self.count_fem = 0
+        # self.set_escola = set()
+        # self.count_escola_publica = 0
+        # self.count_escola_privada = 0
+        # self.lista_UF = list()
+        # self.set_cidade = set()
         self.dic_escolas = dict() #Faz um dicionário escola/administração com a planilha de inscritos
 
         if tabela_classificacao == '':
@@ -96,8 +96,6 @@ class Prova():
             input('Pressione Enter para continuar.')
 
     def é_pública(self, nome):
-        if isinstance(self.dic_escolas[nome], float):
-            print(nome, self.dic_escolas[nome])
         return (self.dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública'})
 
     def é_privada(self, nome):
@@ -113,27 +111,31 @@ class Prova():
         col = {}
         for id_coluna in ('Categoria', 'Sexo', 'Escola', 'UF', 'Cidade'):
             col[id_coluna] = self.receber_nome_da_coluna(df, id_coluna)
+        
+        self.count_total = len(df)
 
-        for i, row in df.iterrows():
-            self.count_total += 1
+        self.counts_cat = df[col['Categoria']].value_counts()
+        self.count_regular = self.counts_cat['Regular']
+        try: self.count_aberta = self.counts_cat['Aberta']
+        except: self.count_aberta = 0 
 
-            if row[col['Categoria']] == 'Aberta': self.count_aberta += 1
-            elif row[col['Categoria']] == 'Regular':
-                self.count_regular += 1
-                if self.é_pública(row[col['Escola']]): self.count_reg_publica += 1
-                elif self.é_privada(row[col['Escola']]): self.count_reg_privada += 1
+        # Ficando com apenas os da categoria regular
+        df = df.loc[ df['Categoria'] == 'Regular' ]
 
-                if row[col['Sexo']] in {'Feminino', 'F'}: self.count_fem += 1
-                elif row[col['Sexo']] in {'Masculino', 'M'}: self.count_masc += 1
+        self.counts_sexo = df[col['Sexo']].value_counts()
+        self.set_escola = set(df[col['Escola']])
+        self.set_cidade = set(df[col['Cidade']])
+        self.set_UF = set(df[col['UF']])
+        self.counts_UF = df[col['UF']].value_counts()
 
-                self.lista_UF.append(row[col['UF']])
-                self.set_cidade.add(row[col['Cidade']])
-                self.set_escola.add(row[col['Escola']])
-            
-        self.set_UF = set(self.lista_UF)
-        self.counter_UF = Counter(self.lista_UF)
+        #Cálculo participantes de escolas públicas/privadas
+        self.count_reg_publica, self.count_reg_privada = 0,0
+        for nome in df[col['Escola']]:
+            if self.é_pública(nome): self.count_reg_publica += 1
+            elif self.é_privada(nome): self.count_reg_privada += 1
 
         #Cálculo escolas públicas/privadas
+        self.count_escola_publica, self.count_escola_privada = 0,0
         for nome in self.set_escola:
             if self.é_privada(nome): self.count_escola_privada += 1
             elif self.é_pública(nome): self.count_escola_publica += 1
@@ -141,7 +143,7 @@ class Prova():
     def print_resultados(self):
         print()
         print(self.nome)
-        print('Total de',str(self.count_regular + self.count_aberta),'participantes')
+        print('Total de',str(self.count_total),'participantes')
         print()
         print('# Categoria Aberta')
         print('    Total:', str(self.count_aberta))
@@ -150,25 +152,24 @@ class Prova():
         print('    Total:', str(self.count_regular))
         print()
         print('    De escola pública:', str(self.count_reg_publica), str_porcentagem(self.count_reg_publica, self.count_regular))
-        print('    De escola privada:', str(self.count_reg_privada))
+        print('    De escola privada:', str(self.count_reg_privada), str_porcentagem(self.count_reg_privada, self.count_regular))
         print()
-        print('    Feminino:', str(self.count_fem), str_porcentagem(self.count_fem,self.count_regular))
-        print('    Masculino:', str(self.count_masc))
-        # print('    Outro:', str(count_regular - count_masc - count_fem))
+        for sexo, qnt in self.counts_sexo.iteritems():
+            print('    ' + sexo + ':', str(qnt), str_porcentagem(qnt, self.count_regular))
         print()
 
         # print(set_escola)
         print('    Total de', str(len(self.set_escola)), 'escolas')
         print('      escolas públicas:', str(self.count_escola_publica), str_porcentagem(self.count_escola_publica, len(self.set_escola)))
-        print('      escolas privadas:', str(self.count_escola_privada))
+        print('      escolas privadas:', str(self.count_escola_privada), str_porcentagem(self.count_escola_privada, len(self.set_escola)))
 
         # print(set_cidade)
         print('    Total de', str(len(self.set_cidade)), 'cidades')
 
         # print(set_UF)
         print('    Total de', str(len(self.set_UF)), 'estados')
-        for dupla in self.counter_UF.most_common():
-            print('      ' + dupla[0] + ':', dupla[1])
+        for estado,qnt in self.counts_UF.iteritems():
+            print('      ' + estado + ':', qnt)
         print()
 
 
