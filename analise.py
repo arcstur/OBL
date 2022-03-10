@@ -45,54 +45,60 @@ class Prova():
         else:
             self.tabela_inscritos = tabela_inscritos
 
+    def receber_nome_da_coluna(self, dataframe, tentativa):
+        if tentativa not in dataframe.columns:
+            print(dataframe.columns)
+            nome_certo_da_coluna = input('Qual o nome certo da coluna ' + tentativa + '?')
+            return(nome_certo_da_coluna)
+        else:
+            return(tentativa)
+
     def criar_dicionario_escolas(self):
         df = pd.read_csv(self.tabela_inscritos)
 
-        col_escola = 'Escola'
-        col_adm = 'Administração'
+        col_cat = self.receber_nome_da_coluna(df, 'Categoria')
+        col_escola = self.receber_nome_da_coluna(df, 'Escola')
+        col_adm = self.receber_nome_da_coluna(df,'Administração')
 
-        if col_escola not in df.columns:
-            print(df.columns)
-            col_escola = input('Qual o nome da coluna que dá o nome da escola?')
-
-        if col_adm not in df.columns:
-            print(df.columns)
-            col_adm = input ('Qual o nome da coluna que dá a administração da escola?')
-
-        for i, row in df.iterrows():
-            self.dic_escolas[row[col_escola]] = row[col_adm]
-       
         ok = True
-        for nome,adm in self.dic_escolas.items():
-            if (adm=='' or adm=='nan') and nome!='':
-                ok = False
-                print('A seguinte escola não possui valor em Administração (pública ou privada). Digite o novo valor.')
-                nova_adm = input(nome + ': ')
-                while not (nova_adm in {'pública', 'privada'}):
-                    print('Deve ser "pública" ou "privada"')
-                    nova_adm = input(nome + ': ')
+        for i, row in df.iterrows():
+            if row[col_cat] == 'Regular':
+                nome, adm = row[col_escola], row[col_adm]
 
-                self.dic_escolas[nome] = nova_adm
+                # Além de criar o dicionário, a função ajusta os valores errados no dataframe
+                # Se a escola não possui administração no dataframe,
+                if pd.isnull(adm) or adm=='':
+                    # Se a escola já possui valor no dicionário, utilizar este valor
+                    if nome in self.dic_escolas.keys():
+                        adm = self.dic_escolas[nome]
+                    # Se não possui, pedir um valor novo para o usuário
+                    else:
+                        ok = False
+                        print('A seguinte escola não possui valor em Administração (1=pública ou 2=privada). Digite o novo valor.')
+                        adm = input(nome + ': ')
+                        while not (adm in {'pública', 'privada', '1', '2'}):
+                            print('Deve ser "pública" (1) ou "privada" (2)')
+                            adm = input(nome + ': ')
+                    
+                        if adm == '1': adm = 'pública'
+                        if adm == '2': adm = 'privada'
+                    # Salvar o valor atualizado no dataframe
+                    df.loc[i,col_adm] = adm
+                
+                # Se já não está no dicionário, salvar
+                if nome not in self.dic_escolas.keys():
+                    self.dic_escolas[row[col_escola]] = adm
 
         if not ok:
+            tabela_inscritos_nova = self.tabela_inscritos.replace('.csv','') + '_atualizado.csv'
+            df.to_csv(tabela_inscritos_nova)
             print()
-            resposta = input('Gostaria de salvar estes novos valores na planilha? [S/n] ')
-            if resposta != 'n':
-                with open(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv', 'w') as fw, open(self.tabela_inscritos, 'r') as fr:
-                    reader = csv.reader(fr)
-                    writer = csv.writer(fw)
-
-                    for line in reader:
-                        if line[index_adm]=='':
-                            line[index_adm] = self.dic_escolas[line[index_escola]]
-                        writer.writerow(line)
-
-                print()
-                print('Os valores atualizados foram salvos na planilha')
-                print(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv')
-                print()
+            print('Os valores atualizados foram salvos na planilha ' + tabela_inscritos_nova)
+            input('Pressione Enter para continuar.')
 
     def é_pública(self, nome):
+        if isinstance(self.dic_escolas[nome], float):
+            print(nome, self.dic_escolas[nome])
         return (self.dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública'})
 
     def é_privada(self, nome):
@@ -193,14 +199,13 @@ def main():
     #     prova.print_resultados()
 
 
-    regab = Prova('PROVA REGULAR E ABERTA', 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv', 'mascate-regular-e-aberta_inscritos.csv')
-    regab.criar_dicionario_escolas()
+    regab = Prova('PROVA REGULAR E ABERTA', 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv', 'mascate-regular-e-aberta_inscritos_atualizado.csv')
     regab.analise()
     regab.print_resultados()
 
-    # mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
-    # mirim.analise()
-    # mirim.print_resultados()
+    mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
+    mirim.analise()
+    mirim.print_resultados()
 
 if __name__ == '__main__':
     main()
