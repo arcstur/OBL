@@ -18,20 +18,6 @@ def intro():
 class Prova():
     def __init__(self, nome, tabela_classificacao='', tabela_inscritos=''):
         self.nome = nome
-        # self.tabela_classificacao = ''
-        # self.tabela_inscritos = ''
-        # self.count_total = 0
-        # self.count_regular = 0
-        # self.count_aberta = 0
-        # self.count_reg_publica = 0
-        # self.count_reg_privada = 0
-        # self.count_masc = 0
-        # self.count_fem = 0
-        # self.set_escola = set()
-        # self.count_escola_publica = 0
-        # self.count_escola_privada = 0
-        # self.lista_UF = list()
-        # self.set_cidade = set()
         self.dic_escolas = dict() #Faz um dicionário escola/administração com a planilha de inscritos
 
         if tabela_classificacao == '':
@@ -103,8 +89,7 @@ class Prova():
 
 
     def analise(self):
-        if len(self.dic_escolas) <= 1:
-            self.criar_dicionario_escolas()
+        self.criar_dicionario_escolas()
 
         df = pd.read_csv(self.tabela_classificacao)
 
