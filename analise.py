@@ -125,11 +125,6 @@ class Prova():
         self.set_UF = set(self.lista_UF)
         self.counter_UF = Counter(self.lista_UF)
 
-        #Remover valores inválidos: não é necessário já que a cat. Regular nunca possui esses valores
-        # for x in ['', 'Não identificado']:
-        #     for sett in [self.set_UF, self.set_cidade, self.set_escola]:
-        #         if x in sett: sett.remove(x)
-
         #Cálculo escolas públicas/privadas
         for nome in self.set_escola:
             if self.é_privada(nome): self.count_escola_privada += 1
@@ -151,10 +146,8 @@ class Prova():
         print()
         print('    Feminino:', str(self.count_fem), str_porcentagem(self.count_fem,self.count_regular))
         print('    Masculino:', str(self.count_masc))
-        # print('    Outro:', str(count_regular - count_masc - count_fem))
         print()
 
-        # print(set_escola)
         print('    Total de', str(len(self.set_escola)), 'escolas')
         print('      escolas públicas:', str(self.count_escola_publica), str_porcentagem(self.count_escola_publica, len(self.set_escola)))
         print('      escolas privadas:', str(self.count_escola_privada))
