@@ -1,4 +1,3 @@
-import csv
 import pandas as pd
 from collections import Counter
 
@@ -56,14 +55,14 @@ class Prova():
     def criar_dicionario_escolas(self):
         df = pd.read_csv(self.tabela_inscritos)
 
-        col_cat = self.receber_nome_da_coluna(df, 'Categoria')
-        col_escola = self.receber_nome_da_coluna(df, 'Escola')
-        col_adm = self.receber_nome_da_coluna(df,'Administração')
+        col = {}
+        for id_coluna in ('Categoria', 'Escola', 'Administração'):
+            col[id_coluna] = self.receber_nome_da_coluna(df, id_coluna)
 
         ok = True
         for i, row in df.iterrows():
-            if row[col_cat] == 'Regular':
-                nome, adm = row[col_escola], row[col_adm]
+            if row[col['Categoria']] == 'Regular':
+                nome, adm = row[col['Escola']], row[col['Administração']]
 
                 # Além de criar o dicionário, a função ajusta os valores errados no dataframe
                 # Se a escola não possui administração no dataframe,
@@ -83,11 +82,11 @@ class Prova():
                         if adm == '1': adm = 'pública'
                         if adm == '2': adm = 'privada'
                     # Salvar o valor atualizado no dataframe
-                    df.loc[i,col_adm] = adm
+                    df.loc[i,col['Administração']] = adm
                 
                 # Se já não está no dicionário, salvar
                 if nome not in self.dic_escolas.keys():
-                    self.dic_escolas[row[col_escola]] = adm
+                    self.dic_escolas[row[col['Escola']]] = adm
 
         if not ok:
             tabela_inscritos_nova = self.tabela_inscritos.replace('.csv','') + '_atualizado.csv'
@@ -109,38 +108,30 @@ class Prova():
         if len(self.dic_escolas) <= 1:
             self.criar_dicionario_escolas()
 
-        with open(self.tabela_classificacao, 'r') as f:
-            reader = csv.reader(f)
+        df = pd.read_csv(self.tabela_classificacao)
 
-            headers = next(reader)
-            index_categoria, index_sexo = headers.index('Categoria'), headers.index('Sexo')
-            index_escola = headers.index('Escola')
-            index_UF, index_cidade = headers.index('UF'), headers.index('Cidade')
+        col = {}
+        for id_coluna in ('Categoria', 'Sexo', 'Escola', 'UF', 'Cidade'):
+            col[id_coluna] = self.receber_nome_da_coluna(df, id_coluna)
 
-            #Ler cada linha e trabalhar
-            for line in reader:
-                self.count_total += 1
+        for i, row in df.iterrows():
+            self.count_total += 1
 
-                if line[index_categoria]=='Aberta': self.count_aberta += 1
-                elif line[index_categoria]=='Regular':
-                    self.count_regular += 1
-                    if self.é_pública(line[index_escola]): self.count_reg_publica += 1
-                    elif self.é_privada(line[index_escola]): self.count_reg_privada += 1
+            if row[col['Categoria']] == 'Aberta': self.count_aberta += 1
+            elif row[col['Categoria']] == 'Regular':
+                self.count_regular += 1
+                if self.é_pública(row[col['Escola']]): self.count_reg_publica += 1
+                elif self.é_privada(row[col['Escola']]): self.count_reg_privada += 1
 
-                    if line[index_sexo] in {'Feminino', 'F'}: self.count_fem += 1
-                    elif line[index_sexo] in {'Masculino', 'M'}: self.count_masc += 1
+                if row[col['Sexo']] in {'Feminino', 'F'}: self.count_fem += 1
+                elif row[col['Sexo']] in {'Masculino', 'M'}: self.count_masc += 1
 
-                    self.lista_UF.append(line[index_UF])
-                    self.set_cidade.add(line[index_cidade])
-                    self.set_escola.add(line[index_escola])
+                self.lista_UF.append(row[col['UF']])
+                self.set_cidade.add(row[col['Cidade']])
+                self.set_escola.add(row[col['Escola']])
             
         self.set_UF = set(self.lista_UF)
         self.counter_UF = Counter(self.lista_UF)
-
-        #Remover valores inválidos: não é necessário já que a cat. Regular nunca possui esses valores
-        # for x in ['', 'Não identificado']:
-        #     for sett in [self.set_UF, self.set_cidade, self.set_escola]:
-        #         if x in sett: sett.remove(x)
 
         #Cálculo escolas públicas/privadas
         for nome in self.set_escola:
