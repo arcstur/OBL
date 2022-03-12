@@ -1,5 +1,4 @@
 import pandas as pd
-from collections import Counter
 
 def str_porcentagem(a,b):
     return('(' + str(int(100*round(a/b,2))) + '%)')
@@ -18,7 +17,6 @@ def intro():
 class Prova():
     def __init__(self, nome, tabela_classificacao='', tabela_inscritos=''):
         self.nome = nome
-        self.dic_escolas = dict() #Faz um dicionário escola/administração com a planilha de inscritos
 
         if tabela_classificacao == '':
             self.tabela_classificacao = input('Digite o nome da planilha de classificação, COM a extensão ".csv": ')
@@ -30,60 +28,61 @@ class Prova():
         else:
             self.tabela_inscritos = tabela_inscritos
 
-    def receber_nome_da_coluna(self, dataframe, tentativa):
-        if tentativa not in dataframe.columns:
-            print(dataframe.columns)
-            nome_certo_da_coluna = input('Qual o nome certo da coluna ' + tentativa + '?')
-            return(nome_certo_da_coluna)
-        else:
-            return(tentativa)
+    def receber_colunas(self, dataframe, colunas):
+        col = {coluna:coluna for coluna in colunas}
+        for coluna in col:
+            if coluna not in dataframe.columns:
+                print(dataframe.columns)
+                col[coluna] = input('Qual o nome certo da coluna ' + coluna + '?')
+        return(col)
 
     def criar_dicionario_escolas(self):
+        self.dic_escolas = dict()
+        
         df = pd.read_csv(self.tabela_inscritos)
 
-        col = {}
-        for id_coluna in ('Categoria', 'Escola', 'Administração'):
-            col[id_coluna] = self.receber_nome_da_coluna(df, id_coluna)
+        col = self.receber_colunas(df, ('Categoria', 'Escola', 'Administração'))
+
+        # Ficando com apenas os da categoria regular
+        df = df.loc[ df[col['Categoria']] == 'Regular' ]
 
         ok = True
         for row in df.itertuples():
-            row = row._asdict()
-            if row[col['Categoria']] == 'Regular':
-                nome, adm = row[col['Escola']], row[col['Administração']]
+            nome, adm = getattr(row, col['Escola']), getattr(row, col['Administração'])
 
-                # Além de criar o dicionário, a função ajusta os valores errados no dataframe
-                # Se a escola não possui administração no dataframe,
-                if pd.isnull(adm) or adm=='':
-                    # Se a escola já possui valor no dicionário, utilizar este valor
-                    if nome in self.dic_escolas.keys():
-                        adm = self.dic_escolas[nome]
-                    # Se não possui, pedir um valor novo para o usuário
-                    else:
-                        ok = False
-                        print('A seguinte escola não possui valor em Administração (1=pública ou 2=privada). Digite o novo valor.')
+            # Além de criar o dicionário, a função ajusta os valores errados no dataframe
+            # Se a escola não possui administração no dataframe, então
+            if pd.isnull(adm) or adm=='':
+                ok = False
+                # Se a escola já possui valor no dicionário, utilizar este valor
+                if nome in self.dic_escolas.keys():
+                    adm = self.dic_escolas[nome]
+                # Se não possui, pedir um valor novo para o usuário
+                else:
+                    print('A seguinte escola não possui valor em Administração (1=pública ou 2=privada). Digite o novo valor.')
+                    adm = input(nome + ': ')
+                    while not (adm in {'pública', 'privada', '1', '2'}):
+                        print('Deve ser "pública" (1) ou "privada" (2)')
                         adm = input(nome + ': ')
-                        while not (adm in {'pública', 'privada', '1', '2'}):
-                            print('Deve ser "pública" (1) ou "privada" (2)')
-                            adm = input(nome + ': ')
-                    
-                        if adm == '1': adm = 'pública'
-                        if adm == '2': adm = 'privada'
-                    # Salvar o valor atualizado no dataframe
-                    df.loc[row['Index'],col['Administração']] = adm
                 
-                # Se já não está no dicionário, salvar
-                if nome not in self.dic_escolas.keys():
-                    self.dic_escolas[row[col['Escola']]] = adm
+                    if adm == '1': adm = 'pública'
+                    if adm == '2': adm = 'privada'
+                # Salvar o valor atualizado no dataframe
+                df.loc[row.Index,col['Administração']] = adm
+            
+            # Se já não está no dicionário, salvar
+            if nome not in self.dic_escolas.keys():
+                self.dic_escolas[getattr(row, col['Escola'])] = adm
 
         if not ok:
-            tabela_inscritos_nova = self.tabela_inscritos.replace('.csv','') + '_atualizado.csv'
+            tabela_inscritos_nova = self.tabela_inscritos.replace('.csv','_atualizado.csv')
             df.to_csv(tabela_inscritos_nova)
             print()
             print('Os valores atualizados foram salvos na planilha ' + tabela_inscritos_nova)
             input('Pressione Enter para continuar.')
 
     def é_pública(self, nome):
-        return (self.dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública'})
+        return (self.dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública', 'publica'})
 
     def é_privada(self, nome):
         return (self.dic_escolas[nome].lower() in {'privada', 'particular'})
@@ -94,9 +93,7 @@ class Prova():
 
         df = pd.read_csv(self.tabela_classificacao)
 
-        col = {}
-        for id_coluna in ('Categoria', 'Sexo', 'Escola', 'UF', 'Cidade'):
-            col[id_coluna] = self.receber_nome_da_coluna(df, id_coluna)
+        col = self.receber_colunas(df, ('Categoria', 'Sexo', 'Escola', 'UF', 'Cidade'))
         
         self.count_total = len(df)
 
@@ -106,7 +103,7 @@ class Prova():
         except: self.count_aberta = 0 
 
         # Ficando com apenas os da categoria regular
-        df = df.loc[ df['Categoria'] == 'Regular' ]
+        df = df.loc[ df[col['Categoria']] == 'Regular' ]
 
         self.counts_sexo = df[col['Sexo']].value_counts()
         self.set_escola = set(df[col['Escola']])
@@ -198,4 +195,4 @@ def profiling():
     # snakeviz profiling.prof
 
 if __name__ == '__main__':
-    main()
+    profiling()
