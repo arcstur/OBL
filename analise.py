@@ -1,5 +1,4 @@
-import csv
-from collections import Counter
+import pandas as pd
 
 def str_porcentagem(a,b):
     return('(' + str(int(100*round(a/b,2))) + '%)')
@@ -18,21 +17,6 @@ def intro():
 class Prova():
     def __init__(self, nome, tabela_classificacao='', tabela_inscritos=''):
         self.nome = nome
-        self.tabela_classificacao = ''
-        self.tabela_inscritos = ''
-        self.count_total = 0
-        self.count_regular = 0
-        self.count_aberta = 0
-        self.count_reg_publica = 0
-        self.count_reg_privada = 0
-        self.count_masc = 0
-        self.count_fem = 0
-        self.set_escola = set()
-        self.count_escola_publica = 0
-        self.count_escola_privada = 0
-        self.lista_UF = list()
-        self.set_cidade = set()
-        self.dic_escolas = dict() #Faz um dicionário escola/administração com a planilha de inscritos
 
         if tabela_classificacao == '':
             self.tabela_classificacao = input('Digite o nome da planilha de classificação, COM a extensão ".csv": ')
@@ -44,88 +28,97 @@ class Prova():
         else:
             self.tabela_inscritos = tabela_inscritos
 
+    def receber_colunas(self, dataframe, colunas):
+        col = {coluna:coluna for coluna in colunas}
+        for coluna in col:
+            if coluna not in dataframe.columns:
+                print(dataframe.columns)
+                col[coluna] = input('Qual o nome certo da coluna ' + coluna + '?')
+        return(col)
+
     def criar_dicionario_escolas(self):
-        with open(self.tabela_inscritos, 'r') as f:
-            reader = csv.reader(f)
+        self.dic_escolas = dict()
+        
+        df = pd.read_csv(self.tabela_inscritos)
 
-            headers = next(reader)
+        col = self.receber_colunas(df, ('Categoria', 'Escola', 'Administração'))
 
-            index_escola = headers.index('Escola')
-            index_adm = headers.index('Administração')
+        # Ficando com apenas os da categoria regular
+        df = df.loc[ df[col['Categoria']] == 'Regular' ]
 
-            for line in reader:
-                self.dic_escolas[line[index_escola]] = line[index_adm]
-                
         ok = True
-        for nome,adm in self.dic_escolas.items():
-            if adm=='' and nome!='':
-                ok = False
-                print('A seguinte escola não possui valor em Administração (pública ou privada). Digite o novo valor.')
-                nova_adm = input(nome + ': ')
-                while not (nova_adm in {'pública', 'privada'}):
-                    print('Deve ser "pública" ou "privada"')
-                    nova_adm = input(nome + ': ')
+        for row in df.itertuples():
+            nome, adm = getattr(row, col['Escola']), getattr(row, col['Administração'])
 
-                self.dic_escolas[nome] = nova_adm
+            # Além de criar o dicionário, a função ajusta os valores errados no dataframe
+            # Se a escola não possui administração no dataframe, então
+            if pd.isnull(adm) or adm=='':
+                ok = False
+                # Se a escola já possui valor no dicionário, utilizar este valor
+                if nome in self.dic_escolas.keys():
+                    adm = self.dic_escolas[nome]
+                # Se não possui, pedir um valor novo para o usuário
+                else:
+                    print('A seguinte escola não possui valor em Administração (1=pública ou 2=privada). Digite o novo valor.')
+                    adm = input(nome + ': ')
+                    while not (adm in {'pública', 'privada', '1', '2'}):
+                        print('Deve ser "pública" (1) ou "privada" (2)')
+                        adm = input(nome + ': ')
+                
+                    if adm == '1': adm = 'pública'
+                    if adm == '2': adm = 'privada'
+                # Salvar o valor atualizado no dataframe
+                df.loc[row.Index,col['Administração']] = adm
+            
+            # Se já não está no dicionário, salvar
+            if nome not in self.dic_escolas.keys():
+                self.dic_escolas[getattr(row, col['Escola'])] = adm
 
         if not ok:
+            tabela_inscritos_nova = self.tabela_inscritos.replace('.csv','_atualizado.csv')
+            df.to_csv(tabela_inscritos_nova)
             print()
-            resposta = input('Gostaria de salvar estes novos valores na planilha? [S/n] ')
-            if resposta != 'n':
-                with open(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv', 'w') as fw, open(self.tabela_inscritos, 'r') as fr:
-                    reader = csv.reader(fr)
-                    writer = csv.writer(fw)
-
-                    for line in reader:
-                        if line[index_adm]=='':
-                            line[index_adm] = self.dic_escolas[line[index_escola]]
-                        writer.writerow(line)
-
-                print()
-                print('Os valores atualizados foram salvos na planilha')
-                print(self.tabela_inscritos.replace('.csv','') + '_atualizado.csv')
-                print()
+            print('Os valores atualizados foram salvos na planilha ' + tabela_inscritos_nova)
+            input('Pressione Enter para continuar.')
 
     def é_pública(self, nome):
-        return (self.dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública'})
+        return (self.dic_escolas[nome].lower() in {'state', 'federal', 'municipal', 'pública', 'publica'})
 
     def é_privada(self, nome):
         return (self.dic_escolas[nome].lower() in {'privada', 'particular'})
 
 
-    def analise(self):
-        if len(self.dic_escolas) <= 1:
-            self.criar_dicionario_escolas()
+    def analisar(self):
+        self.criar_dicionario_escolas()
 
-        with open(self.tabela_classificacao, 'r') as f:
-            reader = csv.reader(f)
+        df = pd.read_csv(self.tabela_classificacao)
 
-            headers = next(reader)
-            index_categoria, index_sexo = headers.index('Categoria'), headers.index('Sexo')
-            index_escola = headers.index('Escola')
-            index_UF, index_cidade = headers.index('UF'), headers.index('Cidade')
+        col = self.receber_colunas(df, ('Categoria', 'Sexo', 'Escola', 'UF', 'Cidade'))
+        
+        self.count_total = len(df)
 
-            #Ler cada linha e trabalhar
-            for line in reader:
-                self.count_total += 1
+        self.counts_cat = df[col['Categoria']].value_counts()
+        self.count_regular = self.counts_cat['Regular']
+        try: self.count_aberta = self.counts_cat['Aberta']
+        except: self.count_aberta = 0 
 
-                if line[index_categoria]=='Aberta': self.count_aberta += 1
-                elif line[index_categoria]=='Regular':
-                    self.count_regular += 1
-                    if self.é_pública(line[index_escola]): self.count_reg_publica += 1
-                    elif self.é_privada(line[index_escola]): self.count_reg_privada += 1
+        # Ficando com apenas os da categoria regular
+        df = df.loc[ df[col['Categoria']] == 'Regular' ]
 
-                    if line[index_sexo] in {'Feminino', 'F'}: self.count_fem += 1
-                    elif line[index_sexo] in {'Masculino', 'M'}: self.count_masc += 1
+        self.counts_sexo = df[col['Sexo']].value_counts()
+        self.set_escola = set(df[col['Escola']])
+        self.set_cidade = set(df[col['Cidade']])
+        self.set_UF = set(df[col['UF']])
+        self.counts_UF = df[col['UF']].value_counts()
 
-                    self.lista_UF.append(line[index_UF])
-                    self.set_cidade.add(line[index_cidade])
-                    self.set_escola.add(line[index_escola])
-            
-        self.set_UF = set(self.lista_UF)
-        self.counter_UF = Counter(self.lista_UF)
+        #Cálculo participantes de escolas públicas/privadas
+        self.count_reg_publica, self.count_reg_privada = 0,0
+        for nome in df[col['Escola']]:
+            if self.é_pública(nome): self.count_reg_publica += 1
+            elif self.é_privada(nome): self.count_reg_privada += 1
 
         #Cálculo escolas públicas/privadas
+        self.count_escola_publica, self.count_escola_privada = 0,0
         for nome in self.set_escola:
             if self.é_privada(nome): self.count_escola_privada += 1
             elif self.é_pública(nome): self.count_escola_publica += 1
@@ -133,7 +126,7 @@ class Prova():
     def print_resultados(self):
         print()
         print(self.nome)
-        print('Total de',str(self.count_regular + self.count_aberta),'participantes')
+        print('Total de',str(self.count_total),'participantes')
         print()
         print('# Categoria Aberta')
         print('    Total:', str(self.count_aberta))
@@ -142,23 +135,23 @@ class Prova():
         print('    Total:', str(self.count_regular))
         print()
         print('    De escola pública:', str(self.count_reg_publica), str_porcentagem(self.count_reg_publica, self.count_regular))
-        print('    De escola privada:', str(self.count_reg_privada))
+        print('    De escola privada:', str(self.count_reg_privada), str_porcentagem(self.count_reg_privada, self.count_regular))
         print()
-        print('    Feminino:', str(self.count_fem), str_porcentagem(self.count_fem,self.count_regular))
-        print('    Masculino:', str(self.count_masc))
+        for sexo, qnt in self.counts_sexo.iteritems():
+            print('    ' + sexo + ':', str(qnt), str_porcentagem(qnt, self.count_regular))
         print()
 
         print('    Total de', str(len(self.set_escola)), 'escolas')
         print('      escolas públicas:', str(self.count_escola_publica), str_porcentagem(self.count_escola_publica, len(self.set_escola)))
-        print('      escolas privadas:', str(self.count_escola_privada))
+        print('      escolas privadas:', str(self.count_escola_privada), str_porcentagem(self.count_escola_privada, len(self.set_escola)))
 
         # print(set_cidade)
         print('    Total de', str(len(self.set_cidade)), 'cidades')
 
         # print(set_UF)
         print('    Total de', str(len(self.set_UF)), 'estados')
-        for dupla in self.counter_UF.most_common():
-            print('      ' + dupla[0] + ':', dupla[1])
+        for estado,qnt in self.counts_UF.iteritems():
+            print('      ' + estado + ':', qnt)
         print()
 
 
@@ -166,27 +159,38 @@ class Prova():
 def main():
     intro()
 
-    # lista_provas = list()
-    # n = int(input('Diga o número de provas/edições que queres analisar: '))
+    lista_provas = list()
+    n = int(input('Diga o número de provas/edições que queres analisar: '))
 
-    # for i in range(n):
-    #     print()
-    #     print('PROVA ', str(i+1))
-    #     nome = input('Digite o nome da prova: ')
-    #     lista_provas.append(Prova(nome, '', ''))
+    for i in range(n):
+        print()
+        print('PROVA ', str(i+1))
+        nome = input('Digite o nome da prova: ')
+        lista_provas.append(Prova(nome, '', ''))
 
-    # for prova in lista_provas:
-    #     prova.analise()
-    #     prova.print_resultados()
+    for prova in lista_provas:
+        prova.analisar()
+        prova.print_resultados()
 
+    # regab = Prova('PROVA REGULAR E ABERTA', 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv', 'mascate-regular-e-aberta_inscritos_atualizado.csv')
+    # regab.analisar()
+    # regab.print_resultados()
 
-    regab = Prova('PROVA REGULAR E ABERTA', 'a.csv', 'b.csv')
-    regab.analise()
-    regab.print_resultados()
+    # mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
+    # mirim.analisar()
+    # mirim.print_resultados()
 
-    mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
-    mirim.analise()
-    mirim.print_resultados()
+def profiling():
+    import cProfile
+    import pstats
+
+    with cProfile.Profile() as pr:
+        main()
+
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.dump_stats(filename='profiling.prof')
+    # snakeviz profiling.prof
 
 if __name__ == '__main__':
     main()
