@@ -185,5 +185,17 @@ def main():
     mirim.analisar()
     mirim.print_resultados()
 
+def profiling():
+    import cProfile
+    import pstats
+
+    with cProfile.Profile() as pr:
+        main()
+
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.dump_stats(filename='profiling.prof')
+    # snakeviz profiling.prof
+
 if __name__ == '__main__':
     main()
