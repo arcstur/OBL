@@ -38,6 +38,7 @@ class Prova():
         else:
             return(tentativa)
 
+    #94% do tempo vai aqui, iterrows (56%) e Series.__getitem__(29%)
     def criar_dicionario_escolas(self):
         df = pd.read_csv(self.tabela_inscritos)
 
@@ -88,7 +89,7 @@ class Prova():
         return (self.dic_escolas[nome].lower() in {'privada', 'particular'})
 
 
-    def analise(self):
+    def analisar(self):
         self.criar_dicionario_escolas()
 
         df = pd.read_csv(self.tabela_classificacao)
@@ -172,16 +173,16 @@ def main():
     #     lista_provas.append(Prova(nome, '', ''))
 
     # for prova in lista_provas:
-    #     prova.analise()
+    #     prova.analisar()
     #     prova.print_resultados()
 
 
     regab = Prova('PROVA REGULAR E ABERTA', 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv', 'mascate-regular-e-aberta_inscritos_atualizado.csv')
-    regab.analise()
+    regab.analisar()
     regab.print_resultados()
 
     mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
-    mirim.analise()
+    mirim.analisar()
     mirim.print_resultados()
 
 if __name__ == '__main__':
