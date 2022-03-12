@@ -38,7 +38,6 @@ class Prova():
         else:
             return(tentativa)
 
-    #94% do tempo vai aqui, iterrows (56%) e Series.__getitem__(29%)
     def criar_dicionario_escolas(self):
         df = pd.read_csv(self.tabela_inscritos)
 
@@ -47,7 +46,8 @@ class Prova():
             col[id_coluna] = self.receber_nome_da_coluna(df, id_coluna)
 
         ok = True
-        for i, row in df.iterrows():
+        for row in df.itertuples():
+            row = row._asdict()
             if row[col['Categoria']] == 'Regular':
                 nome, adm = row[col['Escola']], row[col['Administração']]
 
@@ -69,7 +69,7 @@ class Prova():
                         if adm == '1': adm = 'pública'
                         if adm == '2': adm = 'privada'
                     # Salvar o valor atualizado no dataframe
-                    df.loc[i,col['Administração']] = adm
+                    df.loc[row['Index'],col['Administração']] = adm
                 
                 # Se já não está no dicionário, salvar
                 if nome not in self.dic_escolas.keys():
