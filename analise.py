@@ -195,4 +195,4 @@ def profiling():
     # snakeviz profiling.prof
 
 if __name__ == '__main__':
-    profiling()
+    main()
