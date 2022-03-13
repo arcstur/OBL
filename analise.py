@@ -1,7 +1,8 @@
 import pandas as pd
 
 def str_porcentagem(a,b):
-    return('(' + str(int(100*round(a/b,2))) + '%)')
+    # Formata para 0 casas decimais
+    return(f'({100*a/b:.0f}%)')
 
 def intro():
     print('Para fazer a análise dos participantes, as seguintes colunas serão necessárias:')
@@ -33,7 +34,7 @@ class Prova():
         for coluna in col:
             if coluna not in dataframe.columns:
                 print(dataframe.columns)
-                col[coluna] = input('Qual o nome certo da coluna ' + coluna + '?')
+                col[coluna] = input(f'Qual o nome certo da coluna {coluna}?')
         return(col)
 
     def criar_dicionario_escolas(self):
@@ -60,10 +61,10 @@ class Prova():
                 # Se não possui, pedir um valor novo para o usuário
                 else:
                     print('A seguinte escola não possui valor em Administração (1=pública ou 2=privada). Digite o novo valor.')
-                    adm = input(nome + ': ')
+                    adm = input(f'{nome}: ')
                     while not (adm in {'pública', 'privada', '1', '2'}):
                         print('Deve ser "pública" (1) ou "privada" (2)')
-                        adm = input(nome + ': ')
+                        adm = input(f'{nome}: ')
                 
                     if adm == '1': adm = 'pública'
                     if adm == '2': adm = 'privada'
@@ -78,7 +79,7 @@ class Prova():
             tabela_inscritos_nova = self.tabela_inscritos.replace('.csv','_atualizado.csv')
             df.to_csv(tabela_inscritos_nova)
             print()
-            print('Os valores atualizados foram salvos na planilha ' + tabela_inscritos_nova)
+            print(f'Os valores atualizados foram salvos na planilha {tabela_inscritos_nova}')
             input('Pressione Enter para continuar.')
 
     def é_pública(self, nome):
@@ -126,32 +127,33 @@ class Prova():
     def print_resultados(self):
         print()
         print(self.nome)
-        print('Total de',str(self.count_total),'participantes')
+        print(f'Total de {self.count_total} participantes')
         print()
         print('# Categoria Aberta')
-        print('    Total:', str(self.count_aberta))
+        print(f'    Total: {self.count_aberta}')
         print()
         print('# Categoria Regular')
-        print('    Total:', str(self.count_regular))
+        print(f'    Total: {self.count_regular}')
         print()
-        print('    De escola pública:', str(self.count_reg_publica), str_porcentagem(self.count_reg_publica, self.count_regular))
-        print('    De escola privada:', str(self.count_reg_privada), str_porcentagem(self.count_reg_privada, self.count_regular))
+        print(f'    De escola pública: {self.count_reg_publica} {str_porcentagem(self.count_reg_publica, self.count_regular)}')
+        print(f'    De escola privada: {self.count_reg_privada} {str_porcentagem(self.count_reg_privada, self.count_regular)}')
         print()
         for sexo, qnt in self.counts_sexo.iteritems():
-            print('    ' + sexo + ':', str(qnt), str_porcentagem(qnt, self.count_regular))
+            print(f'    {sexo}: {qnt} {str_porcentagem(qnt, self.count_regular)}')
         print()
 
-        print('    Total de', str(len(self.set_escola)), 'escolas')
-        print('      escolas públicas:', str(self.count_escola_publica), str_porcentagem(self.count_escola_publica, len(self.set_escola)))
-        print('      escolas privadas:', str(self.count_escola_privada), str_porcentagem(self.count_escola_privada, len(self.set_escola)))
+        qnt_escola = len(self.set_escola)
+        print(f'    Total de {qnt_escola} escolas')
+        print(f'      escolas públicas: {self.count_escola_publica} {str_porcentagem(self.count_escola_publica, qnt_escola)}')
+        print(f'      escolas privadas: {self.count_escola_privada} {str_porcentagem(self.count_escola_privada, qnt_escola)}')
 
         # print(set_cidade)
-        print('    Total de', str(len(self.set_cidade)), 'cidades')
+        print(f'    Total de {len(self.set_cidade)} cidades')
 
         # print(set_UF)
-        print('    Total de', str(len(self.set_UF)), 'estados')
-        for estado,qnt in self.counts_UF.iteritems():
-            print('      ' + estado + ':', qnt)
+        print(f'    Total de {len(self.set_UF)} estados')
+        for estado, qnt in self.counts_UF.iteritems():
+            print(f'      {estado}: {qnt}')
         print()
 
 
