@@ -1,8 +1,8 @@
 import pandas as pd
+import functions.utils as utils
 
 def str_porcentagem(a,b):
-    # Formata para 0 casas decimais
-    return(f'({100*a/b:.0f}%)')
+    return utils.str_porcentagem(a, b)
 
 def intro():
     print('Para fazer a análise dos participantes, as seguintes colunas serão necessárias:')
@@ -146,9 +146,14 @@ class Prova():
         print(f'    Total de {qnt_escola} escolas')
         print(f'      escolas públicas: {self.count_escola_publica} {str_porcentagem(self.count_escola_publica, qnt_escola)}')
         print(f'      escolas privadas: {self.count_escola_privada} {str_porcentagem(self.count_escola_privada, qnt_escola)}')
+        print(f'      razão escolas-inscritos: {(qnt_escola/self.count_regular):.6f}')
+        print()
 
         # print(set_cidade)
-        print(f'    Total de {len(self.set_cidade)} cidades')
+        qnt_cidade = len(self.set_cidade)
+        print(f'    Total de {qnt_cidade} cidades')
+        print(f'      razão cidades-inscritos: {(qnt_cidade/self.count_regular):.6f}')
+        print()
 
         # print(set_UF)
         print(f'    Total de {len(self.set_UF)} estados')
@@ -161,22 +166,22 @@ class Prova():
 def main():
     intro()
 
-    lista_provas = list()
-    n = int(input('Diga o número de provas/edições que queres analisar: '))
+    # lista_provas = list()
+    # n = int(input('Diga o número de provas/edições que queres analisar: '))
 
-    for i in range(n):
-        print()
-        print('PROVA ', str(i+1))
-        nome = input('Digite o nome da prova: ')
-        lista_provas.append(Prova(nome, '', ''))
+    # for i in range(n):
+    #     print()
+    #     print('PROVA ', str(i+1))
+    #     nome = input('Digite o nome da prova: ')
+    #     lista_provas.append(Prova(nome, '', ''))
 
-    for prova in lista_provas:
-        prova.analisar()
-        prova.print_resultados()
+    # for prova in lista_provas:
+    #     prova.analisar()
+    #     prova.print_resultados()
 
-    # regab = Prova('PROVA REGULAR E ABERTA', 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv', 'mascate-regular-e-aberta_inscritos_atualizado.csv')
-    # regab.analisar()
-    # regab.print_resultados()
+    regab = Prova('PROVA REGULAR E ABERTA', 'mascate-regular-e-aberta_2021_fase-1_classificacao.csv', 'mascate-regular-e-aberta_inscritos_atualizado.csv')
+    regab.analisar()
+    regab.print_resultados()
 
     # mirim = Prova('PROVA MIRIM', 'mascate-mirim_2021_fase-1_classificacao.csv', 'mascate-mirim_inscritos_atualizado.csv')
     # mirim.analisar()

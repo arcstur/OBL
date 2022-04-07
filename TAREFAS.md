@@ -1,6 +1,14 @@
 # Tarefas
 
-## Funcionalidades
+## v0.2
+
+- [x] razão escolas/inscritos
+- [x] razão cidades/inscritos
+- [ ] quantidades de aluno por escola (tantas escolas com 1 aluno, tantas escolas com 2 alunos, etc)
+- [ ] quantidade de alunos que se repetem (inter-olimpíada e intra-olimpíada)
+- [ ] análise final das provas selecionadas
+
+## v0.1
 
 - [x] incluir porcentagens (2022-02-16)
 - [x] incluir a funcionalidade de pública/privada (2022-02-17)
