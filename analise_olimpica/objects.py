@@ -127,7 +127,7 @@ class Exam():
         
         df = self.df
 
-        col = utils.get_columns(df, ('Categoria', 'Sexo', 'Escola', 'UF', 'Cidade'))
+        col = utils.get_columns(df, ('Categoria', 'Sexo', 'Código INEP', 'UF', 'Cidade', 'Fases', 'Medalhas'))
         
         self.count_total = len(df)
 
@@ -136,6 +136,16 @@ class Exam():
 
         # Sex
         self.value_counter_sexo = df[col['Sexo']].value_counts()
+
+        # Participants
+        df_participants = df.dropna(subset=[col['Fases']])
+        self.participants_count_total = df_participants[col['Fases']].count()
+        self.participants_value_counter_sexo = df_participants[col['Sexo']].value_counts()
+
+        # Medalists
+        df_medalists = df.dropna(subset=[col['Medalhas']])
+        self.medalists_count_total = df_medalists[col['Medalhas']].count()
+        self.medalists_value_counter_sexo = df_medalists[col['Sexo']].value_counts()
 
         # Cities and UF
         value_counter_city = df[col['Cidade']].value_counts()
@@ -181,15 +191,39 @@ class Exam():
 
         self.results = dict()
         self.results['Total'] = self.count_total
+
+        # Categories
         for cat, qnt in self.value_counter_cat.iteritems():
             self.results[f'Categoria {cat}'] = qnt
 
         self.results['De escola pública'] = self.count_public_participants
         self.results['De escola privada'] = self.count_private_participants
 
+        # Sex
         for sexo, qnt in self.value_counter_sexo.iteritems():
             self.results[f'Sexo {sexo}'] = qnt
+        # Girls ratio
+        self.results[f'% de meninas'] = utils.str_percentage(self.value_counter_sexo['Feminino'], self.value_counter_sexo.sum())
 
+        # Participants
+        self.results['Participantes'] = self.participants_count_total
+        # Participants - Ratio
+        self.results['% de participantes'] = utils.str_percentage(self.participants_count_total, self.count_total)
+        # Participants - Sex
+        for sexo, qnt in self.participants_value_counter_sexo.iteritems():
+            self.results[f'Participantes: Sexo {sexo}'] = qnt
+        if 'Feminino' in self.participants_value_counter_sexo:
+            self.results[f'Participantes: % de meninas'] = utils.str_percentage(self.participants_value_counter_sexo['Feminino'], self.participants_value_counter_sexo.sum())
+
+        # Medalists
+        self.results['Medalhistas'] = self.medalists_count_total
+        # Medalists - Sex
+        for sexo, qnt in self.medalists_value_counter_sexo.iteritems():
+            self.results[f'Medalhistas: Sexo {sexo}'] = qnt
+        if 'Feminino' in self.medalists_value_counter_sexo:
+            self.results[f'Medalhistas: % de meninas'] = utils.str_percentage(self.medalists_value_counter_sexo['Feminino'], self.medalists_value_counter_sexo.sum())
+
+        # Schools
         self.results['Escolas'] = self.count_escola
         self.results['Escolas públicas'] = self.count_public_school
         self.results['Escolas privadas'] = self.count_private_school
@@ -198,11 +232,13 @@ class Exam():
         range_span = DEFAULT_RANGE_SPAN
         utils.amount_of_per_participant_qnt(self.results, 'Escolas', self.school_amount_per_participant_qnt, range_span)
 
+        # Cities
         self.results['Cidades'] = self.count_city
         self.results['Razão inscritos/cidades'] = f'{(self.count_total/self.count_city)}'
         
         utils.amount_of_per_participant_qnt(self.results, 'Cidades', self.city_amount_per_participant_qnt, range_span)
         
+        # UF
         self.results['Estados'] = self.count_UF
         for estado, qnt in self.value_counter_UF.iteritems():
             self.results[f'Estado {estado}'] = qnt
