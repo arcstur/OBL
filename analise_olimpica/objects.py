@@ -2,6 +2,8 @@ import pandas as pd
 
 from . import utils
 
+DEFAULT_RANGE_SPAN = [1, 2, 3, 4, 5, 6, 11, 31, 51, 101]
+
 class SchoolDict():
     @classmethod
     def from_file_array(cls, filename_array):
@@ -191,13 +193,13 @@ class Exam():
         self.results['Escolas'] = self.count_escola
         self.results['Escolas públicas'] = self.count_public_school
         self.results['Escolas privadas'] = self.count_private_school
-        self.results['Razão escolas/inscritos'] = f'{(self.count_escola/self.count_total):.6f}'
+        self.results['Razão inscritos/escolas'] = f'{(self.count_total/self.count_escola)}'
 
-        range_span = ([1], [2], [3], [4], [5], range(6,10+1), range(11, 20+1), range(21, 100+1))
+        range_span = DEFAULT_RANGE_SPAN
         utils.amount_of_per_participant_qnt(self.results, 'Escolas', self.school_amount_per_participant_qnt, range_span)
 
         self.results['Cidades'] = self.count_city
-        self.results['Razão cidades/inscritos'] = f'{(self.count_city/self.count_total):.6f}'
+        self.results['Razão inscritos/cidades'] = f'{(self.count_total/self.count_city)}'
         
         utils.amount_of_per_participant_qnt(self.results, 'Cidades', self.city_amount_per_participant_qnt, range_span)
         

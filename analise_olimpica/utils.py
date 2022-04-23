@@ -34,18 +34,18 @@ def ask_new_adm_for_school(school_name):
 
     return school_adm
 
-# Formatting data
-
 def amount_of_per_participant_qnt(results_dict, name, series, range_span):
     
     tmp_sum = 0
-    for _range in range_span:
+    for i in range(len(range_span) - 1):
         qnt = 0
-        for i in _range:
-            if i in series:
-                qnt += series[i]
+        start = range_span[i]
+        end = range_span[i+1] - 1
 
-        start, end = _range[0], _range[-1]
+        for n in range(start, end + 1):
+            if n in series:
+                qnt += series[n]
+
         if start == end:
             results_dict[f'{name} com {start} inscrito{"s" if end != 1 else ""}'] = qnt
         else:
@@ -53,7 +53,7 @@ def amount_of_per_participant_qnt(results_dict, name, series, range_span):
 
         tmp_sum += qnt
 
-    results_dict[f'{name} com mais de {range_span[-1][-1]} inscritos'] = series.sum() - tmp_sum
+    results_dict[f'{name} com mais de {end} inscritos'] = series.sum() - tmp_sum
 
 # Math
 
