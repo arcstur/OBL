@@ -7,7 +7,7 @@ def get_columns(df, columns_guess):
     for column in col:
         if column not in df.columns:
             print(df.columns)
-            col[column] = input(f'Qual o nome certo da coluna {column}?')
+            col[column] = input(f'Qual o nome certo da coluna {column}? ')
     return(col)
 
 
@@ -57,5 +57,5 @@ def amount_of_per_participant_qnt(results_dict, name, series, range_span):
 
 # Math
 
-def str_porcentagem(a,b):
-    return(f'({100*a/b:.0f}%)')
+def str_percentage(a,b):
+    return(f'{100*a/b:.0f}%')
