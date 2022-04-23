@@ -51,7 +51,7 @@ class SchoolDict():
 
     def remove_null_school(self):
         for i, df in enumerate(self.df_array):
-            new_df = df.dropna(subset=['Escola'])
+            new_df = df.dropna(subset=['Código INEP'])
             self.df_array[i] = new_df
 
     def load_dict(self):
@@ -62,59 +62,61 @@ class SchoolDict():
         # First run, saving non-empty
         for df in self.df_array:
         
-            col = utils.get_columns(df, ('Escola', 'Administração'))
+            col = utils.get_columns(df, ('Código INEP', 'Categoria Administrativa'))
 
-            for row in df.itertuples():
-                school_name, school_adm = getattr(row, col['Escola']), getattr(row, col['Administração'])
+            for index, row in df.iterrows():
+                school_code, school_adm = row[col['Código INEP']], row[col['Categoria Administrativa']]
 
                 if not (pd.isnull(school_adm) or school_adm==''): # if there is a value for administration
 
                     # Save to the dict, if it isn't already there
-                    if school_name not in self.school_dict.keys():
-                        self.school_dict[school_name] = school_adm
+                    if school_code not in self.school_dict.keys():
+                        self.school_dict[school_code] = school_adm
 
-                    elif self.school_dict[school_name] != school_adm:
-                        print(f'{school_name} tem dois valores diferentes para administração.')
+                    elif self.school_dict[school_code] != school_adm:
+                        print(f'{school_code} tem dois valores diferentes para administração.')
                 else:
                     # Append school name to the to-be-fixed school name list
-                    empty_adm_name_list.append(school_name)
+                    empty_adm_name_list.append(school_code)
 
         # ---
         # Second run, fixing schools with empty adm
         for df in self.df_array:
 
-            col = utils.get_columns(df, ('Escola', 'Administração'))
+            col = utils.get_columns(df, ('Código INEP', 'Categoria Administrativa'))
 
             # Get only schools left out by previous run
-            df_empty_adm = df[df[col['Escola']].isin(empty_adm_name_list)]
+            df_empty_adm = df[df[col['Código INEP']].isin(empty_adm_name_list)]
 
-            for row in df_empty_adm.itertuples():
-                school_name, school_adm = getattr(row, col['Escola']), getattr(row, col['Administração'])
+            for index, row in df_empty_adm.iterrows():
+                school_code, school_adm = getattr(row, col['Código INEP']), getattr(row, col['Categoria Administrativa'])
 
                 # If the school already has a value in the dict
-                if school_name in self.school_dict.keys():
-                    school_adm = self.school_dict[school_name]
+                if school_code in self.school_dict.keys():
+                    school_adm = self.school_dict[school_code]
                 
                 # If not, ask the user, and save in the dict
                 else:
-                    school_adm = utils.ask_new_adm_for_school(school_name)
+                    school_adm = utils.ask_new_adm_for_school(school_code)
                     
-                    self.school_dict[school_name] = school_adm
+                    self.school_dict[school_code] = school_adm
             
         # If there was a school name in the to-be-fixed name list
         if empty_adm_name_list:
             new_file = 'school_dict.csv'
-            df = pd.DataFrame(self.school_dict.items(), columns=['Escola', 'Administração'])
+            df = pd.DataFrame(self.school_dict.items(), columns=['Código INEP', 'Categoria Administrativa'])
             df.to_csv(new_file, index=False)
             print()
             print(f'O dicionário de escolas atualizado foi salvo no arquivo {new_file}')
             input('Pressione Enter para continuar.')
 
-    def is_public(self, school_name):
-        return (self.school_dict[school_name].lower() in {'state', 'federal', 'municipal', 'pública', 'publica'})
+    def is_public(self, school_code):
+        if school_code in self.school_dict:
+            return (self.school_dict[school_code].lower() in {'state', 'federal', 'municipal', 'pública', 'publica'})
 
-    def is_private(self, school_name):
-        return (self.school_dict[school_name].lower() in {'privada', 'particular'})
+    def is_private(self, school_code):
+        if school_code in self.school_dict:
+            return (self.school_dict[school_code].lower() in {'privada', 'particular'})
 
 
 
@@ -157,8 +159,7 @@ class Exam():
         self.count_UF = self.value_counter_UF.value_counts().sum()
 
         # Schools
-
-        school_column_nonnull = df.dropna(subset=[col['Escola']])[col['Escola']]
+        school_column_nonnull = df.dropna(subset=[col['Código INEP']])[col['Código INEP']]
         
         # The doubel value counter gets the amount of schools per given quantity of participants
         value_counter_school = school_column_nonnull.value_counts()
@@ -169,23 +170,29 @@ class Exam():
 
         #Participants in a private or public school
         self.count_public_participants, self.count_private_participants = 0,0
+        self.count_admnotinfo_participants = 0
 
-        for school_name in school_column_nonnull:
+        for school_code in school_column_nonnull:
 
-            if school_dict_object.is_public(school_name):
+            if school_dict_object.is_public(school_code):
                 self.count_public_participants += 1
-            elif school_dict_object.is_private(school_name):
+            elif school_dict_object.is_private(school_code):
                 self.count_private_participants += 1
+            else:
+                self.count_admnotinfo_participants += 1
 
         #How many schools are public or private
         self.count_public_school, self.count_private_school = 0,0
+        self.count_admnotinfo_school = 0
 
-        for school_name in self.set_school:
+        for school_code in self.set_school:
 
-            if school_dict_object.is_private(school_name):
-                self.count_private_school += 1
-            elif school_dict_object.is_public(school_name):
+            if school_dict_object.is_public(school_code):
                 self.count_public_school += 1
+            elif school_dict_object.is_private(school_code):
+                self.count_private_school += 1
+            else:
+                self.count_admnotinfo_school += 1
 
     def get_results_dict(self):
 
@@ -194,16 +201,17 @@ class Exam():
 
         # Categories
         for cat, qnt in self.value_counter_cat.iteritems():
-            self.results[f'Categoria {cat}'] = qnt
+            self.results[f'Inscritos: Categoria {cat}'] = qnt
 
-        self.results['De escola pública'] = self.count_public_participants
-        self.results['De escola privada'] = self.count_private_participants
+        self.results['Inscritos de escola pública'] = self.count_public_participants
+        self.results['Inscritos de escola privada'] = self.count_private_participants
+        self.results['Inscritos de escola com adm. não info.'] = self.count_admnotinfo_participants
 
         # Sex
         for sexo, qnt in self.value_counter_sexo.iteritems():
-            self.results[f'Sexo {sexo}'] = qnt
+            self.results[f'Inscritos: Sexo {sexo}'] = qnt
         # Girls ratio
-        self.results[f'% de meninas'] = utils.str_percentage(self.value_counter_sexo['Feminino'], self.value_counter_sexo.sum())
+        self.results[f'Inscritos: % de meninas'] = utils.str_percentage(self.value_counter_sexo['Feminino'], self.value_counter_sexo.sum())
 
         # Participants
         self.results['Participantes'] = self.participants_count_total
@@ -227,6 +235,7 @@ class Exam():
         self.results['Escolas'] = self.count_escola
         self.results['Escolas públicas'] = self.count_public_school
         self.results['Escolas privadas'] = self.count_private_school
+        self.results['Escolas com adm. não info.'] = self.count_admnotinfo_school
         self.results['Razão inscritos/escolas'] = f'{(self.count_total/self.count_escola)}'
 
         range_span = DEFAULT_RANGE_SPAN
