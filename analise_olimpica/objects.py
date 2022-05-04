@@ -129,7 +129,9 @@ class Exam():
         
         df = self.df
 
-        col = utils.get_columns(df, ('Categoria', 'Sexo', 'Código INEP', 'UF', 'Cidade', 'Fases', 'Medalhas'))
+        col = utils.get_columns(df, ('Fractal ID', 'Categoria', 'Sexo', 'Código INEP', 'UF', 'Cidade', 'Fases', 'Medalhas'))
+
+        self.set_fractal_id = set(df[col['Fractal ID']].unique())
         
         self.count_total = len(df)
 
@@ -239,13 +241,13 @@ class Exam():
         self.results['Razão inscritos/escolas'] = f'{(self.count_total/self.count_escola)}'
 
         range_span = DEFAULT_RANGE_SPAN
-        utils.amount_of_per_participant_qnt(self.results, 'Escolas', self.school_amount_per_participant_qnt, range_span)
+        utils.amount_of_per_participant_qnt(self.results, self.school_amount_per_participant_qnt, range_span, 'Escolas')
 
         # Cities
         self.results['Cidades'] = self.count_city
         self.results['Razão inscritos/cidades'] = f'{(self.count_total/self.count_city)}'
         
-        utils.amount_of_per_participant_qnt(self.results, 'Cidades', self.city_amount_per_participant_qnt, range_span)
+        utils.amount_of_per_participant_qnt(self.results, self.city_amount_per_participant_qnt, range_span, 'Cidades')
         
         # UF
         self.results['Estados'] = self.count_UF
@@ -257,7 +259,5 @@ class Exam():
     def store_data(self):
         df = pd.DataFrame(self.results.items(), columns=['Nome', 'Valor'])
         df.to_excel(f'data_{self.name}.xlsx', index=False)
-
-    
 
     

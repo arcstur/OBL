@@ -10,6 +10,29 @@ def get_columns(df, columns_guess):
             col[column] = input(f'Qual o nome certo da coluna {column}? ')
     return(col)
 
+def amount_of_per_participant_qnt(results_dict, series, range_span, quantity_name='', property_name_tuple=('inscrito', 'inscritos')):
+
+    tmp_sum = 0
+    for i in range(len(range_span) - 1):
+        qnt = 0
+        start = range_span[i]
+        end = range_span[i+1] - 1
+
+        for n in range(start, end + 1):
+            if n in series:
+                qnt += series[n]
+
+        if start == end:
+            results_dict[f'{quantity_name} com {start} {property_name_tuple[1 if end != 1 else 0]}'] = qnt
+        else:
+            results_dict[f'{quantity_name} com {start}-{end} {property_name_tuple[1 if end != 1 else 0]}'] = qnt
+
+        tmp_sum += qnt
+
+    results_dict[f'{quantity_name} com mais de {end} {property_name_tuple[1]}'] = series.sum() - tmp_sum
+
+    return results_dict
+
 
 # User input
 
@@ -34,26 +57,6 @@ def ask_new_adm_for_school(school_name):
 
     return school_adm
 
-def amount_of_per_participant_qnt(results_dict, name, series, range_span):
-    
-    tmp_sum = 0
-    for i in range(len(range_span) - 1):
-        qnt = 0
-        start = range_span[i]
-        end = range_span[i+1] - 1
-
-        for n in range(start, end + 1):
-            if n in series:
-                qnt += series[n]
-
-        if start == end:
-            results_dict[f'{name} com {start} inscrito{"s" if end != 1 else ""}'] = qnt
-        else:
-            results_dict[f'{name} com {start}-{end} inscrito{"s" if end != 1 else ""}'] = qnt
-
-        tmp_sum += qnt
-
-    results_dict[f'{name} com mais de {end} inscritos'] = series.sum() - tmp_sum
 
 # Math
 
