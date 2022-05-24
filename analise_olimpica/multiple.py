@@ -7,6 +7,8 @@ def analyse_multiple_exams(main_df, school_dict_object, analyse_year=True):
 
     col = utils.get_columns(main_df, ('Ano', 'Olimpíada', 'Fractal ID'))
 
+    main_df = main_df.sort_values([col['Ano'], col['Olimpíada']], ascending=[False, True])
+
     main_exam = objects.Exam('Geral', main_df)
     main_exam.fetch_data(school_dict_object)
     keys = main_exam.get_results_dict().keys()
