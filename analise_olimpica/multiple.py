@@ -89,4 +89,4 @@ def analyse_multiple_exams(main_df, school_dict_object, analyse_year=True):
     year_results_df.to_excel(writer, sheet_name='Comparação_Anual')
     oly_results_df.to_excel(writer, sheet_name='Comparação_Olímpica')
 
-    writer.save()
+    writer.close()

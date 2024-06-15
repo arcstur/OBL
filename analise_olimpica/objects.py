@@ -202,7 +202,7 @@ class Exam():
         self.results['Total'] = self.count_total
 
         # Categories
-        for cat, qnt in self.value_counter_cat.iteritems():
+        for cat, qnt in self.value_counter_cat.items():
             self.results[f'Inscritos: Categoria {cat}'] = qnt
 
         self.results['Inscritos de escola pública'] = self.count_public_participants
@@ -210,7 +210,7 @@ class Exam():
         self.results['Inscritos de escola com adm. não info.'] = self.count_admnotinfo_participants
 
         # Sex
-        for sexo, qnt in self.value_counter_sexo.iteritems():
+        for sexo, qnt in self.value_counter_sexo.items():
             self.results[f'Inscritos: Sexo {sexo}'] = qnt
         # Girls ratio
         self.results[f'Inscritos: % de meninas'] = utils.str_percentage(self.value_counter_sexo['Feminino'], self.value_counter_sexo.sum())
@@ -220,7 +220,7 @@ class Exam():
         # Participants - Ratio
         self.results['% de participantes'] = utils.str_percentage(self.participants_count_total, self.count_total)
         # Participants - Sex
-        for sexo, qnt in self.participants_value_counter_sexo.iteritems():
+        for sexo, qnt in self.participants_value_counter_sexo.items():
             self.results[f'Participantes: Sexo {sexo}'] = qnt
         if 'Feminino' in self.participants_value_counter_sexo:
             self.results[f'Participantes: % de meninas'] = utils.str_percentage(self.participants_value_counter_sexo['Feminino'], self.participants_value_counter_sexo.sum())
@@ -228,7 +228,7 @@ class Exam():
         # Medalists
         self.results['Medalhistas'] = self.medalists_count_total
         # Medalists - Sex
-        for sexo, qnt in self.medalists_value_counter_sexo.iteritems():
+        for sexo, qnt in self.medalists_value_counter_sexo.items():
             self.results[f'Medalhistas: Sexo {sexo}'] = qnt
         if 'Feminino' in self.medalists_value_counter_sexo:
             self.results[f'Medalhistas: % de meninas'] = utils.str_percentage(self.medalists_value_counter_sexo['Feminino'], self.medalists_value_counter_sexo.sum())
@@ -251,7 +251,7 @@ class Exam():
         
         # UF
         self.results['Estados'] = self.count_UF
-        for estado, qnt in self.value_counter_UF.iteritems():
+        for estado, qnt in self.value_counter_UF.items():
             self.results[f'Estado {estado}'] = qnt
 
         return self.results
