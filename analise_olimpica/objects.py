@@ -65,12 +65,12 @@ class SchoolDict:
         # ---
         # First run, saving non-empty
         for df in self.df_array:
-            col = utils.get_columns(df, ("Código INEP", "Categoria Administrativa"))
+            col = utils.get_columns(df, ("Código INEP", "Administração"))
 
             for index, row in df.iterrows():
                 school_code, school_adm = (
                     row[col["Código INEP"]],
-                    row[col["Categoria Administrativa"]],
+                    row[col["Administração"]],
                 )
 
                 if not (
@@ -91,7 +91,7 @@ class SchoolDict:
         # ---
         # Second run, fixing schools with empty adm
         for df in self.df_array:
-            col = utils.get_columns(df, ("Código INEP", "Categoria Administrativa"))
+            col = utils.get_columns(df, ("Código INEP", "Administração"))
 
             # Get only schools left out by previous run
             df_empty_adm = df[df[col["Código INEP"]].isin(empty_adm_name_list)]
@@ -99,7 +99,7 @@ class SchoolDict:
             for index, row in df_empty_adm.iterrows():
                 school_code, school_adm = (
                     getattr(row, col["Código INEP"]),
-                    getattr(row, col["Categoria Administrativa"]),
+                    getattr(row, col["Administração"]),
                 )
 
                 # If the school already has a value in the dict
@@ -117,7 +117,7 @@ class SchoolDict:
             new_file = "school_dict.csv"
             df = pd.DataFrame(
                 self.school_dict.items(),
-                columns=["Código INEP", "Categoria Administrativa"],
+                columns=["Código INEP", "Administração"],
             )
             df.to_csv(new_file, index=False)
             print()
