@@ -1,5 +1,7 @@
 import pandas as pd
 
+from .exceptions import NonExistantColumn
+
 # Pandas
 
 
@@ -8,7 +10,11 @@ def get_columns(df, columns_guess):
     for column in col:
         if column not in df.columns:
             print(df.columns)
-            col[column] = input(f"Qual o nome certo da coluna {column}? ")
+            value = input(f"Qual o nome certo da coluna {column}? (coloque 'N.A.' caso não exista) ")
+            if value != "N.A.":
+                col[column] = value
+            else:
+                raise NonExistantColumn()
     return col
 
 

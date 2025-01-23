@@ -1,0 +1,2 @@
+class NonExistantColumn(Exception):
+    pass

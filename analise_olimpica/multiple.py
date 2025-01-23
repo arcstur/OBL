@@ -1,7 +1,25 @@
+from typing import List
 import pandas as pd
-from collections import Counter
 
-from . import objects, utils
+from . import objects
+from . import utils
+from .objects import ExamFile
+
+
+def analyse_multiple_examfiles(
+    examfiles: List[ExamFile],
+    school_dict_object,
+    analyse_year=True,
+):
+    df_array = []
+    for e in examfiles:
+        print(f"Loading dataframe... {e.filename}")
+        df = pd.read_excel(e.filename)
+        df["Ano"] = e.year
+        df["Olimpíada"] = e.olympiad
+        df_array.append(df)
+    main_df = pd.concat(df_array)
+    analyse_multiple_exams(main_df, school_dict_object, analyse_year)
 
 
 def analyse_multiple_exams(main_df, school_dict_object, analyse_year=True):
@@ -105,3 +123,9 @@ def analyse_multiple_exams(main_df, school_dict_object, analyse_year=True):
     oly_results_df.to_excel(writer, sheet_name="Comparação_Olímpica")
 
     writer.close()
+
+    print("")
+    print("")
+    print("")
+    print("DONE!")
+    print("super_data.xlsx created!")

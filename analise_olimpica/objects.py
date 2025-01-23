@@ -1,6 +1,8 @@
 import pandas as pd
+from dataclasses import dataclass
 
 from . import utils
+from .exceptions import NonExistantColumn
 
 DEFAULT_RANGE_SPAN = [1, 2, 3, 4, 5, 6, 11, 31, 51, 101]
 
@@ -11,6 +13,7 @@ class SchoolDict:
         df_array = []
 
         for filename in filename_array:
+            print(f"Loading... {filename}")
             df = utils.get_dataframe(filename)
             df_array.append(df)
 
@@ -56,6 +59,7 @@ class SchoolDict:
     def remove_null_school(self):
         for i, df in enumerate(self.df_array):
             new_df = df.dropna(subset=["Código INEP"])
+            new_df = new_df[df["Código INEP"] != 0]
             self.df_array[i] = new_df
 
     def load_dict(self):
@@ -65,7 +69,12 @@ class SchoolDict:
         # ---
         # First run, saving non-empty
         for df in self.df_array:
-            col = utils.get_columns(df, ("Código INEP", "Administração"))
+            try:
+                col = utils.get_columns(df, ("Código INEP", "Administração"))
+            except NonExistantColumn:
+                print("Skipping df with non-existant column")
+                df.to_remove = True
+                continue
 
             for index, row in df.iterrows():
                 school_code, school_adm = (
@@ -87,6 +96,11 @@ class SchoolDict:
                 else:
                     # Append school name to the to-be-fixed school name list
                     empty_adm_name_list.append(school_code)
+
+        # removing the ones with non-existant columns
+        self.df_array = [
+            df for df in self.df_array if not getattr(df, "to_remove", False)
+        ]
 
         # ---
         # Second run, fixing schools with empty adm
@@ -314,3 +328,9 @@ class Exam:
     def store_data(self):
         df = pd.DataFrame(self.results.items(), columns=["Nome", "Valor"])
         df.to_excel(f"data_{self.name}.xlsx", index=False)
+
+@dataclass
+class ExamFile:
+    filename: str
+    olympiad: str
+    year: int
